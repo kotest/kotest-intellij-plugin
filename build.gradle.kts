@@ -19,6 +19,9 @@ repositories {
    maven("https://www.jetbrains.com/intellij-repository/snapshots")
 }
 
+
+// useful link for plugin versions https://plugins.jetbrains.com/plugin/6954-kotlin/versions
+// https://jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html
 val plugins = listOf(
    plugin.PluginDescriptor(
       since = "193.4099.13",
@@ -81,8 +84,8 @@ dependencies {
    implementation("io.kotest:kotest-framework-launcher-jvm:4.2.0")
 
    // needed for the resource files which are loaded into java light tests
-   testImplementation("io.kotest:kotest-framework-api:4.3.0")
-   testImplementation("io.kotest:kotest-assertions-core-jvm:4.3.0")
+   testImplementation("io.kotest:kotest-framework-api:4.3.1")
+   testImplementation("io.kotest:kotest-assertions-core-jvm:4.3.1")
 }
 
 sourceSets {
@@ -97,7 +100,14 @@ sourceSets {
 }
 
 tasks {
+
    compileKotlin {
+      kotlinOptions {
+         jvmTarget = "1.8"
+      }
+   }
+
+   withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
       kotlinOptions {
          jvmTarget = "1.8"
       }
