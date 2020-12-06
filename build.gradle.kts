@@ -21,32 +21,32 @@ repositories {
 
 val plugins = listOf(
    plugin.PluginDescriptor(
-      "193.4099.13",
-      "193.*",
-      "IC-2019.3",
-      "IC-193",
-      listOf("java", "org.jetbrains.plugins.gradle", "org.jetbrains.kotlin:1.3.72-release-IJ2019.3-5")
+      since = "193.4099.13",
+      until = "193.*",
+      sdkVersion = "IC-2019.3",
+      sourceFolder = "IC-193",
+      deps = listOf("java", "org.jetbrains.plugins.gradle", "org.jetbrains.kotlin:1.3.72-release-IJ2019.3-5")
    ),
    plugin.PluginDescriptor(
-      "201.6487",
-      "201.*",
-      "IC-2020.1",
-      "IC-201",
-      listOf("java", "org.jetbrains.plugins.gradle", "org.jetbrains.kotlin:1.3.72-release-IJ2020.1-5")
+      since = "201.6487",
+      until = "201.*",
+      sdkVersion = "IC-2020.1",
+      sourceFolder = "IC-201",
+      deps = listOf("java", "org.jetbrains.plugins.gradle", "org.jetbrains.kotlin:1.3.72-release-IJ2020.1-5")
    ),
    plugin.PluginDescriptor(
-      "202.1",
-      "202.*",
-      "IC-2020.2",
-      "IC-202",
-      listOf("java", "org.jetbrains.plugins.gradle", "org.jetbrains.kotlin:1.4.10-release-IJ2020.2-1")
+      since = "202.1",
+      until = "202.*",
+      sdkVersion = "IC-2020.2",
+      sourceFolder = "IC-202",
+      deps = listOf("java", "org.jetbrains.plugins.gradle", "org.jetbrains.kotlin:1.4.10-release-IJ2020.2-1")
    ),
    plugin.PluginDescriptor(
-      "203.4449.2",
-      "203.*",
-      "203-EAP-SNAPSHOT",
-      "IC-203",
-      listOf("java", "org.jetbrains.plugins.gradle", "org.jetbrains.kotlin:1.4.10-release-IJ2020.2-1")
+      since = "203.5981.155",
+      until = "203.*",
+      sdkVersion = "IC-2020.3",
+      sourceFolder = "IC-203",
+      deps = listOf("java", "org.jetbrains.plugins.gradle", "org.jetbrains.kotlin:1.4.10-release-IJ2020.2-1")
    )
 )
 
