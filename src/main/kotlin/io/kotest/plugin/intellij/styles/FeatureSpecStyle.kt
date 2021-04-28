@@ -28,8 +28,9 @@ object FeatureSpecStyle : SpecStyle {
    private fun locateParent(element: PsiElement): Test? {
       // if parent is null then we have hit the end
       return when (val p = element.context) {
+         null -> null
          is KtCallExpression -> p.tryFeature()
-         else -> null
+         else -> locateParent(p)
       }
    }
 

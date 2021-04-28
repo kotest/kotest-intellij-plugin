@@ -10,7 +10,7 @@ import javax.swing.Icon
 
 data class Gutter(
    val tooltip: String,
-   val offset: Int,
+   val offset: Int = 0,
    val icon: Icon = AllIcons.RunConfigurations.TestState.Run
 )
 

@@ -28,8 +28,9 @@ object DescribeSpecStyle : SpecStyle {
    private fun locateParent(element: PsiElement): Test? {
       // if parent is null then we have hit the end
       return when (val p = element.parent) {
+         null -> null
          is KtCallExpression -> p.tryDescribe() ?: p.tryXDescribe() ?: p.tryContext() ?: p.tryXContent()
-         else -> null
+         else -> locateParent(p)
       }
    }
 

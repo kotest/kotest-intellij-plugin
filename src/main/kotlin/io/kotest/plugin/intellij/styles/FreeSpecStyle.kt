@@ -31,8 +31,9 @@ object FreeSpecStyle : SpecStyle {
    private fun locateParent(element: PsiElement): Test? {
       // if parent is null then we have hit the end
       return when (val p = element.parent) {
+         null -> null
          is KtBinaryExpression -> p.tryContainer()
-         else -> null
+         else -> locateParent(p)
       }
    }
 

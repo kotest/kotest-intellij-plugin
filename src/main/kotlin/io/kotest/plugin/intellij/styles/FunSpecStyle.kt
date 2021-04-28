@@ -28,14 +28,20 @@ object FunSpecStyle : SpecStyle {
    private fun locateParent(element: PsiElement): Test? {
       // if parent is null then we have hit the end
       return when (val p = element.parent) {
-         is KtCallExpression -> p.tryContext()
-         else -> null
+         null -> null
+         is KtCallExpression -> p.tryContext() ?: p.tryXContext()
+         else -> locateParent(p)
       }
    }
 
    private fun KtCallExpression.tryContext(): Test? {
       val context = extractStringArgForFunctionWithStringAndLambdaArgs("context") ?: return null
-      return buildTest(TestName(null, context.text, context.interpolated), this, TestType.Container)
+      return buildTest(TestName(null, context.text, context.interpolated), this, TestType.Container, false)
+   }
+
+   private fun KtCallExpression.tryXContext(): Test? {
+      val context = extractStringArgForFunctionWithStringAndLambdaArgs("xcontext") ?: return null
+      return buildTest(TestName(null, context.text, context.interpolated), this, TestType.Container, true)
    }
 
    /**
@@ -46,7 +52,18 @@ object FunSpecStyle : SpecStyle {
     */
    private fun KtCallExpression.tryTest(): Test? {
       val test = extractStringArgForFunctionWithStringAndLambdaArgs("test") ?: return null
-      return buildTest(TestName(null, test.text, test.interpolated), this, TestType.Test)
+      return buildTest(TestName(null, test.text, test.interpolated), this, TestType.Test, false)
+   }
+
+   /**
+    * A test of the form:
+    *
+    *   xtest("test name") { }
+    *
+    */
+   private fun KtCallExpression.tryXTest(): Test? {
+      val test = extractStringArgForFunctionWithStringAndLambdaArgs("xtest") ?: return null
+      return buildTest(TestName(null, test.text, test.interpolated), this, TestType.Test, true)
    }
 
    /**
@@ -57,11 +74,22 @@ object FunSpecStyle : SpecStyle {
     */
    private fun KtDotQualifiedExpression.tryTestWithConfig(): Test? {
       val test = extractLhsStringArgForDotExpressionWithRhsFinalLambda("test", "config") ?: return null
-      return buildTest(TestName(null, test.text, test.interpolated), this, TestType.Test)
+      return buildTest(TestName(null, test.text, test.interpolated), this, TestType.Test, false)
    }
 
-   private fun buildTest(testName: TestName, element: PsiElement, type: TestType): Test {
-      return Test(testName, locateParent(element), type, false, element)
+   /**
+    * A test of the form:
+    *
+    *   xtest("test name").config(...) { }
+    *
+    */
+   private fun KtDotQualifiedExpression.tryXTestWithConfig(): Test? {
+      val test = extractLhsStringArgForDotExpressionWithRhsFinalLambda("xtest", "config") ?: return null
+      return buildTest(TestName(null, test.text, test.interpolated), this, TestType.Test, true)
+   }
+
+   private fun buildTest(testName: TestName, element: PsiElement, type: TestType, xdisabled: Boolean): Test {
+      return Test(testName, locateParent(element), type, xdisabled, element)
    }
 
    /**
@@ -73,8 +101,8 @@ object FunSpecStyle : SpecStyle {
     */
    override fun test(element: PsiElement): Test? {
       return when (element) {
-         is KtCallExpression -> element.tryContext() ?: element.tryTest()
-         is KtDotQualifiedExpression -> element.tryTestWithConfig()
+         is KtCallExpression -> element.tryContext() ?: element.tryXContext() ?: element.tryTest() ?: element.tryXTest()
+         is KtDotQualifiedExpression -> element.tryTestWithConfig() ?: element.tryXTestWithConfig()
          else -> null
       }
    }
