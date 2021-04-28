@@ -91,13 +91,7 @@ class TestNodeDescriptor(project: Project,
       templatePresentation.locationString = null
       templatePresentation.presentableText = test.test.name.displayName()
       when (test.test.enabled) {
-         true -> when (isUnique) {
-            true -> templatePresentation.setIcon(AllIcons.Nodes.Test)
-            false -> {
-               templatePresentation.setIcon(AllIcons.Nodes.ErrorIntroduction)
-               templatePresentation.locationString = "duplicate test name"
-            }
-         }
+         true -> templatePresentation.setIcon(AllIcons.Nodes.Test)
          false -> templatePresentation.setIcon(AllIcons.Nodes.TestIgnored)
       }
    }
