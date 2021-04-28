@@ -41,7 +41,7 @@ object BehaviorSpecStyle : SpecStyle {
       val given = this.extractStringArgForFunctionWithStringAndLambdaArgs(givens)
       return if (given == null) null else {
          val name = TestName("Given: ", given.text, given.interpolated)
-         Test(name, emptyList(), TestType.Container, xdisabled = false, psi = this)
+         Test(name, null, TestType.Container, xdisabled = false, psi = this)
       }
    }
 
@@ -49,7 +49,7 @@ object BehaviorSpecStyle : SpecStyle {
       val w = this.extractStringArgForFunctionWithStringAndLambdaArgs(whens)
       return if (w == null) null else {
          val name = TestName("When: ", w.text, w.interpolated)
-         val parents = locateParent()?.context ?: emptyList()
+         val parents = locateParent()
          Test(name, parents, TestType.Container, xdisabled = false, psi = this)
       }
    }
@@ -58,7 +58,7 @@ object BehaviorSpecStyle : SpecStyle {
       val a = this.extractStringArgForFunctionWithStringAndLambdaArgs(ands)
       return if (a == null) null else {
          val name = TestName("And: ", a.text, a.interpolated)
-         val parents = locateParent()?.context ?: emptyList()
+         val parents = locateParent()
          Test(name, parents, TestType.Container, xdisabled = false, psi = this)
       }
    }
@@ -66,7 +66,7 @@ object BehaviorSpecStyle : SpecStyle {
    private fun KtDotQualifiedExpression.tryThenWithConfig(): Test? {
       val then = extractLhsStringArgForDotExpressionWithRhsFinalLambda(thens, listOf("config"))
       return if (then == null) null else {
-         val parents = locateParent()?.context ?: emptyList()
+         val parents = locateParent()
          val name = TestName("Then: ", then.text, then.interpolated)
          Test(name, parents, TestType.Test, xdisabled = false, psi = this)
       }
@@ -75,7 +75,7 @@ object BehaviorSpecStyle : SpecStyle {
    private fun KtCallExpression.tryThen(): Test? {
       val then = this.extractStringArgForFunctionWithStringAndLambdaArgs(thens)
       return if (then == null) null else {
-         val parents = locateParent()?.context ?: emptyList()
+         val parents = locateParent()
          val name = TestName("Then: ", then.text, then.interpolated)
          Test(name, parents, TestType.Test, xdisabled = false, psi = this)
       }

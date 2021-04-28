@@ -36,17 +36,17 @@ data class TestPathEntry(val name: String)
 
 data class Test(
    val name: TestName, // the name as entered by the user
-   val context: List<Test>, // components for the path, should not include prefixes
+   val parent: Test?, // can be null if this is a root test
    val testType: TestType,
    val xdisabled: Boolean, // if true then this test was defined using one of the x methods
    val psi: PsiElement // the canonical element that identifies this test
 ) {
 
    // true if this test is not xdisabled and not disabled by a bang and not nested inside another disabled test
-   val enabled: Boolean = !xdisabled && !name.bang && context.all { it.enabled }
+   val enabled: Boolean = !xdisabled && !name.bang && (parent == null || parent.enabled)
 
    // true if this is a top level test (aka has no parents)
-   val root = context.isEmpty()
+   val root = parent == null
 
    // true if this is not a top level test (aka is nested inside another test case)
    val isNested: Boolean = !root
@@ -54,7 +54,10 @@ data class Test(
    /**
     * Full path to this test is all parents plus this test
     */
-   fun path() = context.map { TestPathEntry(it.name.name) } + TestPathEntry(name.name)
+   fun path(): List<TestPathEntry> = when (parent) {
+      null -> listOf(TestPathEntry(name.name))
+      else -> parent.path() + TestPathEntry(name.name)
+   }
 
    /**
     * Returns the test path with delimiters so that the launcher can parse into components

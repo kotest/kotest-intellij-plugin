@@ -28,11 +28,12 @@ object FreeSpecStyle : SpecStyle {
 
    override fun isTestElement(element: PsiElement): Boolean = test(element) != null
 
-   private fun locateParentContainers(element: PsiElement): List<Test> {
+   private fun locateParent(element: PsiElement): Test? {
       // if parent is null then we have hit the end
-      val p = element.parent ?: return emptyList()
-      val context = if (p is KtBinaryExpression) listOfNotNull(p.tryContainer()) else emptyList()
-      return locateParentContainers(p) + context
+      return when (val p = element.parent) {
+         is KtBinaryExpression -> p.tryContainer()
+         else -> null
+      }
    }
 
    /**
@@ -67,8 +68,7 @@ object FreeSpecStyle : SpecStyle {
    }
 
    private fun buildTest(testName: TestName, element: PsiElement, type: TestType): Test {
-      val contexts = locateParentContainers(element)
-      return Test(testName, contexts, type, false, element)
+      return Test(testName, locateParent(element), type, false, element)
    }
 
    override fun test(element: PsiElement): Test? {

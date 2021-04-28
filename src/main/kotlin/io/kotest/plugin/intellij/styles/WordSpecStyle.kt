@@ -49,7 +49,7 @@ object WordSpecStyle : SpecStyle {
       val name = extractStringLiteralFromLhsOfInfixFunction(listOf("when", "When"))
       return if (name == null) null else {
          val testName = TestName(null, name.text, name.interpolated)
-         Test(testName, emptyList(), TestType.Container, xdisabled = false, psi = this)
+         Test(testName, null, TestType.Container, xdisabled = false, psi = this)
       }
    }
 
@@ -59,11 +59,11 @@ object WordSpecStyle : SpecStyle {
          val testName = TestName(null, name.text, name.interpolated)
          val w = locateParentWhen()
          return if (w == null) {
-            Test(testName, emptyList(), TestType.Container, xdisabled = false, psi = this)
+            Test(testName, null, TestType.Container, xdisabled = false, psi = this)
          } else {
             Test(
                testName,
-               listOf(w),
+               w,
                TestType.Container,
                xdisabled = false,
                psi = this
@@ -89,21 +89,21 @@ object WordSpecStyle : SpecStyle {
          when {
             should != null && w != null -> Test(
                TestName(null, subject.text, subject.interpolated),
-               listOf(w, should),
+               w,
                TestType.Test,
                xdisabled = false,
                psi = psi
             )
             should != null -> Test(
                TestName(null, subject.text, subject.interpolated),
-               listOf(should),
+               should,
                TestType.Test,
                xdisabled = false,
                psi = psi
             )
             else -> Test(
                TestName(null, subject.text, subject.interpolated),
-               emptyList(),
+               null,
                TestType.Test,
                xdisabled = false,
                psi = psi

@@ -25,16 +25,12 @@ object DescribeSpecStyle : SpecStyle {
 
    override fun isTestElement(element: PsiElement): Boolean = test(element) != null
 
-   /**
-    * For a given PsiElement that we know to be a test, we iterate up the stack looking for parent tests.
-    */
-   private fun locateParents(element: PsiElement): List<Test> {
+   private fun locateParent(element: PsiElement): Test? {
       // if parent is null then we have hit the end
-      val p = element.parent ?: return emptyList()
-      val context = if (p is KtCallExpression) listOfNotNull(
-         p.tryDescribe() ?: p.tryXDescribe() ?: p.tryContext() ?: p.tryXContent()
-      ) else emptyList()
-      return locateParents(p) + context
+      return when (val p = element.parent) {
+         is KtCallExpression -> p.tryDescribe() ?: p.tryXDescribe() ?: p.tryContext() ?: p.tryXContent()
+         else -> null
+      }
    }
 
    /**
@@ -136,8 +132,7 @@ object DescribeSpecStyle : SpecStyle {
    }
 
    private fun buildTest(testName: TestName, xdisabled: Boolean, element: PsiElement, testType: TestType): Test {
-      val contexts = locateParents(element)
-      return Test(testName, contexts, testType, xdisabled, element)
+      return Test(testName, locateParent(element), testType, xdisabled, element)
    }
 
    override fun test(element: PsiElement): Test? {

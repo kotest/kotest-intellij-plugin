@@ -25,11 +25,12 @@ object FeatureSpecStyle : SpecStyle {
 
    override fun isTestElement(element: PsiElement): Boolean = test(element) != null
 
-   private fun PsiElement.locateParentTests(): List<Test> {
+   private fun locateParent(element: PsiElement): Test? {
       // if parent is null then we have hit the end
-      val p = parent ?: return emptyList()
-      val context = if (p is KtCallExpression) listOfNotNull(p.tryFeature()) else emptyList()
-      return parent.locateParentTests() + context
+      return when (val p = element.context) {
+         is KtCallExpression -> p.tryFeature()
+         else -> null
+      }
    }
 
    private fun KtCallExpression.tryFeature(): Test? {
@@ -48,7 +49,7 @@ object FeatureSpecStyle : SpecStyle {
    }
 
    private fun buildTest(testName: TestName, element: PsiElement, type: TestType): Test {
-      val parents = element.locateParentTests()
+      val parents = locateParent(element)
       return Test(testName, parents, type, false, element)
    }
 

@@ -8,13 +8,13 @@ import io.kotest.matchers.shouldBe
 import java.nio.file.Paths
 import javax.swing.Icon
 
-class DescribeSpecRunMarkerTest : LightJavaCodeInsightFixtureTestCase() {
+data class Gutter(
+   val tooltip: String,
+   val offset: Int,
+   val icon: Icon = AllIcons.RunConfigurations.TestState.Run
+)
 
-   data class Gutter(
-      val tooltip: String,
-      val offset: Int,
-      val icon: Icon = AllIcons.RunConfigurations.TestState.Run
-   )
+class DescribeSpecRunMarkerTest : LightJavaCodeInsightFixtureTestCase() {
 
    override fun getTestDataPath(): String {
       val path = Paths.get("./src/test/resources/").toAbsolutePath()

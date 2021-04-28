@@ -29,7 +29,7 @@ object AnnotationSpecStyle : SpecStyle {
             val name = element.name ?: return null
             return Test(
                TestName(null, name, focus = false, bang = false, interpolated = false),
-               emptyList(),
+               null,
                TestType.Test,
                xdisabled = false,
                psi = element
