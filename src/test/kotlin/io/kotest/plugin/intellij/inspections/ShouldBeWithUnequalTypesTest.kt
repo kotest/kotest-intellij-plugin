@@ -2,6 +2,7 @@ package io.kotest.plugin.intellij.inspections
 
 import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.testFramework.fixtures.LightJavaCodeInsightFixtureTestCase
+import io.kotest.assertions.assertSoftly
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
@@ -25,6 +26,21 @@ internal class ShouldBeWithUnequalTypesTest : LightJavaCodeInsightFixtureTestCas
       highlight.severity shouldBe HighlightSeverity.WARNING
       highlight.startOffset shouldBe 191
       highlight.endOffset shouldBe 205
+   }
+
+   fun testInspectionWithFunctionInvocation() {
+      myFixture.configureByFile("/inspections/unequalTypesFunctionInvocation.kt")
+      myFixture.enableInspections(ShouldBeWithUnequalTypesInspection::class.java)
+      val highlight = myFixture.doHighlighting()
+         .singleOrNull { it.description == "Comparing incompatible types Int and Double" }
+
+      assertSoftly {
+         highlight shouldNotBe null
+         highlight!!.text shouldBe """50 shouldBe circleArea(radius = 4)"""
+         highlight.severity shouldBe HighlightSeverity.WARNING
+         highlight.startOffset shouldBe 191
+         highlight.endOffset shouldBe 225
+      }
    }
 
    fun testInspectionWithNullable() {
