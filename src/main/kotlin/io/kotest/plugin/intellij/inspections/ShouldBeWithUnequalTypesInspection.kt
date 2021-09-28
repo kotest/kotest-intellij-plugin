@@ -4,10 +4,11 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementVisitor
-import org.jetbrains.kotlin.idea.debugger.sequence.psi.resolveType
+import org.jetbrains.kotlin.idea.caches.resolve.analyze
 import org.jetbrains.kotlin.idea.inspections.AbstractKotlinInspection
 import org.jetbrains.kotlin.psi.KtBinaryExpression
 import org.jetbrains.kotlin.psi.KtExpression
+import org.jetbrains.kotlin.resolve.lazy.BodyResolveMode
 import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.types.typeUtil.makeNotNullable
 
@@ -21,12 +22,15 @@ class ShouldBeWithUnequalTypesInspection : AbstractKotlinInspection() {
                   val lhsType = element.left?.tryResolveType()
                   val rhsType = element.right?.tryResolveType()
 
-                  if (lhsType != rhsType) {
-                     holder.registerProblem(
-                        element,
-                        "Comparing incompatible types ${lhsType.toString()} and ${rhsType.toString()}",
-                        ProblemHighlightType.WARNING,
-                     )
+                  when (lhsType isComparableTo rhsType) {
+                     true -> Unit // Let test compare the types
+                     false -> {
+                        holder.registerProblem(
+                           element,
+                           "Comparing incompatible types $lhsType and $rhsType",
+                           ProblemHighlightType.WARNING,
+                        )
+                     }
                   }
                }
             }
@@ -40,12 +44,32 @@ class ShouldBeWithUnequalTypesInspection : AbstractKotlinInspection() {
     */
    private fun KtExpression.tryResolveType(): KotlinType? =
       try {
-         this.resolveType().makeNotNullable()
+         analyze(BodyResolveMode.PARTIAL).getType(this)?.makeNotNullable()
       } catch (e: Exception) {
          null
       }
 
    companion object {
+      infix fun KotlinType?.isComparableTo(other: KotlinType?): Boolean =
+         when {
+            this == null && other == null -> true
+            this != null && other != null -> comparableTypes.any { it.contains(this, other) }
+            else -> false
+         }
+
       val testedOperations = listOf("shouldBe", "shouldNotBe")
+
+      private val comparableTypes = setOf<TypeSet>(
+         IntegerNumbers,
+         FloatingPointNumbers,
+      )
+
+      object IntegerNumbers : TypeSet(listOf("Int", "Long"))
+      object FloatingPointNumbers : TypeSet(listOf("Float", "Double"))
+
+      abstract class TypeSet(val typeNames: List<String>) {
+         fun contains(vararg type: KotlinType) =
+            this.typeNames.containsAll(type.map { it.toString() })
+      }
    }
 }

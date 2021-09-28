@@ -10,5 +10,7 @@ class NullableUnequalTypesTest : FunSpec({
       val x: Int? = null
       x shouldBe 5
       5 shouldBe x
+      x shouldBe 5L
+      5L shouldBe x
    }
 })
