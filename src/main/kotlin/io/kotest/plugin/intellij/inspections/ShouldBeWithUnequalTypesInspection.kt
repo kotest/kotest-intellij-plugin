@@ -11,6 +11,7 @@ import org.jetbrains.kotlin.psi.KtExpression
 import org.jetbrains.kotlin.resolve.lazy.BodyResolveMode
 import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.types.typeUtil.makeNotNullable
+import org.jetbrains.kotlin.types.checker.NewKotlinTypeChecker
 
 class ShouldBeWithUnequalTypesInspection : AbstractKotlinInspection() {
 
@@ -53,7 +54,10 @@ class ShouldBeWithUnequalTypesInspection : AbstractKotlinInspection() {
       infix fun KotlinType?.isComparableTo(other: KotlinType?): Boolean =
          when {
             this == null && other == null -> true
-            this != null && other != null -> comparableTypes.any { it.contains(this, other) }
+            this != null && other != null -> NewKotlinTypeChecker.Default.isSubtypeOf(this, other) ||
+               NewKotlinTypeChecker.Default.isSubtypeOf(other, this) ||
+               NewKotlinTypeChecker.Default.equalTypes(other, this) ||
+               comparableTypes.any { it.contains(this, other) }
             else -> false
          }
 
@@ -64,8 +68,10 @@ class ShouldBeWithUnequalTypesInspection : AbstractKotlinInspection() {
          FloatingPointNumbers,
       )
 
+      object IntegerNumberArrays : TypeSet(listOf("IntArray", "LongArray"))
       object IntegerNumbers : TypeSet(listOf("Int", "Long"))
       object FloatingPointNumbers : TypeSet(listOf("Float", "Double"))
+      object FloatingPointNumberArrays : TypeSet(listOf("FloatArray", "DoubleArray"))
 
       abstract class TypeSet(val typeNames: List<String>) {
          fun contains(vararg type: KotlinType) =
