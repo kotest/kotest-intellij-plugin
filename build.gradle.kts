@@ -9,7 +9,7 @@ buildscript {
 plugins {
    kotlin("jvm")
    java
-   id("org.jetbrains.intellij").version("0.6.5")
+   id("org.jetbrains.intellij").version("0.7.3")
 }
 
 repositories {
@@ -20,11 +20,15 @@ repositories {
 }
 
 
-// useful link for plugin versions https://plugins.jetbrains.com/plugin/6954-kotlin/versions
 // https://jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html
-// json output of versions: https://jb.gg/intellij-platform-builds-list
-// json for ultimate https://data.services.jetbrains.com/products?fields=code,name,releases.downloads,releases.version,releases.build,releases.type&code=IIU
-// when releasing for an EAP, look at snapshots: https://www.jetbrains.com/intellij-repository/snapshots and use eg 211-EAP-SNAPSHOT
+// useful link for kotlin plugin versions:
+//    https://plugins.jetbrains.com/plugin/6954-kotlin/versions
+// json output of versions:
+//    https://jb.gg/intellij-platform-builds-list
+// json output but restricted to IDEA ultimate:
+//    https://data.services.jetbrains.com/products?fields=code,name,releases.downloads,releases.version,releases.build,releases.type&code=IIU
+// when releasing for an EAP, look at snapshots and use eg 211-EAP-SNAPSHOT:
+//    https://www.jetbrains.com/intellij-repository/snapshots
 val plugins = listOf(
    plugin.PluginDescriptor(
       since = "193.4099.13",
@@ -81,21 +85,20 @@ intellij {
 }
 
 dependencies {
-   compileOnly(kotlin("stdlib"))
-   implementation("javax.xml.bind:jaxb-api:2.2.12")
-   implementation("javax.activation:activation:1.1.1")
+   implementation("javax.xml.bind:jaxb-api:_")
+   implementation("javax.activation:activation:_")
 
    // we bundle this for 4.1 support
    // in kotest 4.2.0 the launcher has moved to a stand alone module
-   implementation("io.kotest:kotest-launcher:1.0.9")
+   implementation("io.kotest:kotest-launcher:1.0.10")
 
    // this is needed to use the launcher in 4.2.0, in 4.2.1+ the launcher is built
    // into the engine dep which should already be on the classpath
    implementation("io.kotest:kotest-framework-launcher-jvm:4.2.0")
 
    // needed for the resource files which are loaded into java light tests
-   testImplementation("io.kotest:kotest-framework-api:4.4.1")
-   testImplementation("io.kotest:kotest-assertions-core-jvm:4.4.1")
+   testImplementation("io.kotest:kotest-framework-api:_")
+   testImplementation("io.kotest:kotest-assertions-core-jvm:_")
 }
 
 sourceSets {
