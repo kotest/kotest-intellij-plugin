@@ -49,4 +49,18 @@ internal class ShouldBeWithUnequalTypesTest : LightJavaCodeInsightFixtureTestCas
       myFixture.doHighlighting()
          .filter { it?.description?.contains("Comparing incompatible types") == true } shouldHaveSize 0
    }
+
+   fun testInspectionWithMatcher() {
+      myFixture.configureByFile("/inspections/comparingWithMatcher.kt")
+      myFixture.enableInspections(ShouldBeWithUnequalTypesInspection::class.java)
+      myFixture.doHighlighting()
+         .filter { it?.description?.contains("Comparing incompatible types") == true } shouldHaveSize 0
+   }
+
+   fun testInspectionWithSubtypes() {
+      myFixture.configureByFile("/inspections/comparingWithSubtypes.kt")
+      myFixture.enableInspections(ShouldBeWithUnequalTypesInspection::class.java)
+      myFixture.doHighlighting()
+         .filter { it?.description?.contains("Comparing incompatible types") == true } shouldHaveSize 0
+   }
 }

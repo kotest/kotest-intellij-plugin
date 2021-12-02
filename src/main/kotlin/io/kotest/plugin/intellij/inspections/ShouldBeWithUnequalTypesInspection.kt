@@ -10,8 +10,8 @@ import org.jetbrains.kotlin.psi.KtBinaryExpression
 import org.jetbrains.kotlin.psi.KtExpression
 import org.jetbrains.kotlin.resolve.lazy.BodyResolveMode
 import org.jetbrains.kotlin.types.KotlinType
-import org.jetbrains.kotlin.types.typeUtil.makeNotNullable
 import org.jetbrains.kotlin.types.checker.NewKotlinTypeChecker
+import org.jetbrains.kotlin.types.typeUtil.makeNotNullable
 
 class ShouldBeWithUnequalTypesInspection : AbstractKotlinInspection() {
 
@@ -51,31 +51,42 @@ class ShouldBeWithUnequalTypesInspection : AbstractKotlinInspection() {
       }
 
    companion object {
-      infix fun KotlinType?.isComparableTo(other: KotlinType?): Boolean =
+      infix fun KotlinType?.isComparableTo(rhs: KotlinType?): Boolean =
          when {
-            this == null && other == null -> true
-            this != null && other != null -> NewKotlinTypeChecker.Default.isSubtypeOf(this, other) ||
-               NewKotlinTypeChecker.Default.isSubtypeOf(other, this) ||
-               NewKotlinTypeChecker.Default.equalTypes(other, this) ||
-               comparableTypes.any { it.contains(this, other) }
+            this == null && rhs == null -> true
+            this != null && rhs != null ->
+               rhs.isMatcher() ||
+                  NewKotlinTypeChecker.Default.equalTypes(this, rhs) ||
+                  NewKotlinTypeChecker.Default.isSubtypeOf(this, rhs) ||
+                  NewKotlinTypeChecker.Default.isSubtypeOf(rhs, this) ||
+                  comparableTypes.any { it.contains(this, rhs) }
             else -> false
          }
 
+      // This requires the rhs to actually be of a type named "*Matcher*"
+      //
+      // Using `TypeUtils.getAllSupertypes` for an object implementing `Matcher` only gives `Any` as supertype for
+      // some reason.
+      //
+      // Perhaps we can add annotations to all implementations of `Matcher<*>` using a compiler plugin? That could
+      // be picked up here later
+      private fun KotlinType.isMatcher() =
+         toString().contains("Matcher")
+
       val testedOperations = listOf("shouldBe", "shouldNotBe")
 
-      private val comparableTypes = setOf<TypeSet>(
-         IntegerNumbers,
-         FloatingPointNumbers,
+      private val comparableTypes = setOf(
+         object : TypeSet("Int", "Long") {},
+         object : TypeSet("IntArray", "LongArray") {},
+         object : TypeSet("Float", "Double") {},
+         object : TypeSet("FloatArray", "DoubleArray") {},
       )
 
-      object IntegerNumberArrays : TypeSet(listOf("IntArray", "LongArray"))
-      object IntegerNumbers : TypeSet(listOf("Int", "Long"))
-      object FloatingPointNumbers : TypeSet(listOf("Float", "Double"))
-      object FloatingPointNumberArrays : TypeSet(listOf("FloatArray", "DoubleArray"))
+      abstract class TypeSet(vararg types: String) {
+         val types = types.toList()
 
-      abstract class TypeSet(val typeNames: List<String>) {
          fun contains(vararg type: KotlinType) =
-            this.typeNames.containsAll(type.map { it.toString() })
+            types.containsAll(type.map { it.toString() })
       }
    }
 }
