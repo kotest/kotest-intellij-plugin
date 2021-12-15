@@ -19,24 +19,6 @@ internal fun KtExpression.tryResolveType(): KotlinType? =
    }
 
 /**
- * Helper class for constructing a set of types, and testing whether a given [KotlinType] is part of the set
- * Construction is done using type names atm, but an additional constructor accepting [KotlinType]s could be added
- */
-internal class TypeSet(vararg typeNames: String) {
-   val types = typeNames.toSet()
-
-   fun contains(vararg type: KotlinType) =
-      types.containsAll(type.map { it.toString() })
-}
-
-private val defaultComparableTypes = setOf(
-   TypeSet("Int", "Long"),
-   TypeSet("IntArray", "LongArray"),
-   TypeSet("Float", "Double"),
-   TypeSet("FloatArray", "DoubleArray"),
-)
-
-/**
  * Determines whether two types are considered comparable.
  * Everything is considered comparable with a Matcher
  * Otherwise, if LHS <:< RHS or RHS <:< LHS (where <:< means subtype or type), we consider them comparable
@@ -56,6 +38,24 @@ internal fun KotlinType?.isComparableTo(
             comparableTypes.any { it.contains(this, rhs) }
       else -> false
    }
+
+private val defaultComparableTypes = setOf(
+   TypeSet("Int", "Long"),
+   TypeSet("IntArray", "LongArray"),
+   TypeSet("Float", "Double"),
+   TypeSet("FloatArray", "DoubleArray"),
+)
+
+/**
+ * Helper class for constructing a set of types, and testing whether a given [KotlinType] is part of the set
+ * Construction is done using type names atm, but an additional constructor accepting [KotlinType]s could be added
+ */
+internal class TypeSet(vararg typeNames: String) {
+   val types = typeNames.toSet()
+
+   fun contains(vararg type: KotlinType) =
+      types.containsAll(type.map { it.toString() })
+}
 
 // This requires the rhs to actually be of a type named "*Matcher*"
 //
