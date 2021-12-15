@@ -12,6 +12,10 @@ class MatcherTest : FunSpec({
       val x: Int? = null
       x shouldBe AlwaysPassMatcher
    }
+
+   test("otherFoo") {
+      5 shouldBe AnyComparableMatcher
+   }
 })
 
 object AlwaysPassMatcher : Matcher<Int> {
@@ -21,5 +25,11 @@ object AlwaysPassMatcher : Matcher<Int> {
          { "" },
          { "" }
       )
+}
+
+object AnyComparableMatcher : Matcher<Comparable<Int>> {
+   override fun test(value: Comparable<Int>): MatcherResult {
+      TODO("Not yet implemented")
+   }
 }
 

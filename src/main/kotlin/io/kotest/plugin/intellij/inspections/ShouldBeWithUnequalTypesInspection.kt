@@ -4,14 +4,12 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementVisitor
-import org.jetbrains.kotlin.idea.caches.resolve.analyze
+import io.kotest.plugin.intellij.psi.TypeSet
+import io.kotest.plugin.intellij.psi.tryResolveType
 import org.jetbrains.kotlin.idea.inspections.AbstractKotlinInspection
 import org.jetbrains.kotlin.psi.KtBinaryExpression
-import org.jetbrains.kotlin.psi.KtExpression
-import org.jetbrains.kotlin.resolve.lazy.BodyResolveMode
 import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.types.checker.NewKotlinTypeChecker
-import org.jetbrains.kotlin.types.typeUtil.makeNotNullable
 
 class ShouldBeWithUnequalTypesInspection : AbstractKotlinInspection() {
 
@@ -39,18 +37,22 @@ class ShouldBeWithUnequalTypesInspection : AbstractKotlinInspection() {
       }
    }
 
-   /**
-    * Fetches the type of [this] while ignoring nullability.
-    * E.g. if this is a `[Boolean]?` we will get [Boolean].
-    */
-   private fun KtExpression.tryResolveType(): KotlinType? =
-      try {
-         analyze(BodyResolveMode.PARTIAL).getType(this)?.makeNotNullable()
-      } catch (e: Exception) {
-         null
-      }
-
    companion object {
+      val testedOperations = listOf("shouldBe", "shouldNotBe")
+
+      private val comparableTypes = setOf(
+         TypeSet("Int", "Long"),
+         TypeSet("IntArray", "LongArray"),
+         TypeSet("Float", "Double"),
+         TypeSet("FloatArray", "DoubleArray"),
+      )
+
+      /**
+       * Determines whether two types are considered comparable.
+       * Everything is considered comparable with a Matcher
+       * Otherwise, if LHS <:< RHS or RHS <:< LHS (where <:< means subtype or type), we consider them comparable
+       * We can also manually mark types as comparable using [comparableTypes].
+       */
       infix fun KotlinType?.isComparableTo(rhs: KotlinType?): Boolean =
          when {
             this == null && rhs == null -> true
@@ -72,21 +74,5 @@ class ShouldBeWithUnequalTypesInspection : AbstractKotlinInspection() {
       // be picked up here later
       private fun KotlinType.isMatcher() =
          toString().contains("Matcher")
-
-      val testedOperations = listOf("shouldBe", "shouldNotBe")
-
-      private val comparableTypes = setOf(
-         object : TypeSet("Int", "Long") {},
-         object : TypeSet("IntArray", "LongArray") {},
-         object : TypeSet("Float", "Double") {},
-         object : TypeSet("FloatArray", "DoubleArray") {},
-      )
-
-      abstract class TypeSet(vararg types: String) {
-         val types = types.toList()
-
-         fun contains(vararg type: KotlinType) =
-            types.containsAll(type.map { it.toString() })
-      }
    }
 }
