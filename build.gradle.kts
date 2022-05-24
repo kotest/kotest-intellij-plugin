@@ -122,7 +122,7 @@ intellij {
 }
 
 dependencies {
-   implementation("javax.xml.bind:jaxb-api:2.3.0")
+   implementation("javax.xml.bind:jaxb-api:2.3.1")
    implementation("javax.activation:activation:1.1.1")
 
    // we bundle this for 4.1 support
