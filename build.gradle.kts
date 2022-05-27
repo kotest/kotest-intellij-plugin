@@ -135,7 +135,7 @@ dependencies {
 
    // needed for the resource files which are loaded into java light tests
    testImplementation("io.kotest:kotest-framework-api:4.6.4")
-   testImplementation("io.kotest:kotest-assertions-core-jvm:4.6.4")
+   testImplementation("io.kotest:kotest-assertions-core-jvm:5.3.0")
 }
 
 sourceSets {
