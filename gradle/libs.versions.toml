@@ -1,6 +1,6 @@
 [versions]
 # We separate these from the actual runtime dependencies
-kotest-testing = "4.6.3"
+kotest-testing = "4.6.4"
 
 [libraries]
 kotest-framework-launcher = { module = "io.kotest:kotest-framework-launcher", version = "4.2.0" }
