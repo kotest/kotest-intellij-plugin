@@ -62,7 +62,6 @@ class KotestConfiguration(name: String, factory: ConfigurationFactory, project: 
 
    // used by AbstractJavaTestConfigurationProducer which we don't use as that class is basically
    // around helpers for classes/methods based testing
-   // but we implement it nicely anyway
    override fun getTestType(): String = when {
       testPath != null -> "test"
       specName != null -> "spec"
@@ -70,7 +69,7 @@ class KotestConfiguration(name: String, factory: ConfigurationFactory, project: 
       else -> "source"
    }
 
-   override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> = SettingsEditorPanel(project)
+   override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> = KotestSettingsEditor(this)
 
    override fun suggestedName(): String? = RunData(specName, testPath, packageName).suggestedName()
 
@@ -108,8 +107,9 @@ class KotestConfiguration(name: String, factory: ConfigurationFactory, project: 
    }
 
    override fun getTestSearchScope(): TestSearchScope = this.searchScope.scope
+
    override fun setSearchScope(searchScope: TestSearchScope?) {
-      if (searchScope == null) this.searchScope.scope = searchScope
+      if (searchScope != null) this.searchScope.scope = searchScope
    }
 
    override fun bePatternConfiguration(classes: MutableList<PsiClass>?, method: PsiMethod?) {}
