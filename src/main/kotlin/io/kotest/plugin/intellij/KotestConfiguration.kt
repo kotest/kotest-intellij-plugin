@@ -24,6 +24,7 @@ import com.intellij.refactoring.listeners.RefactoringElementListener
 import io.kotest.plugin.intellij.run.KotestRunnableState
 import io.kotest.plugin.intellij.run.RunData
 import io.kotest.plugin.intellij.run.suggestedName
+import io.kotest.plugin.intellij.ui.KotestSettingsEditor
 import org.jdom.Element
 import org.jetbrains.jps.model.serialization.PathMacroUtil
 import org.jetbrains.kotlin.psi.KtClassOrObject
