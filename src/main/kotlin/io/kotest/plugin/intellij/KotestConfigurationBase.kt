@@ -8,13 +8,11 @@ import com.intellij.execution.Location
 import com.intellij.execution.configuration.EnvironmentVariablesComponent
 import com.intellij.execution.configurations.ConfigurationFactory
 import com.intellij.execution.configurations.JavaRunConfigurationModule
-import com.intellij.execution.configurations.RunConfiguration
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.testframework.TestSearchScope
 import com.intellij.execution.testframework.sm.runner.SMTRunnerConsoleProperties
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.module.ModuleManager
-import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.JDOMExternalizerUtil
 import com.intellij.psi.PsiClass
@@ -24,12 +22,11 @@ import com.intellij.refactoring.listeners.RefactoringElementListener
 import io.kotest.plugin.intellij.run.KotestRunnableState
 import io.kotest.plugin.intellij.run.RunData
 import io.kotest.plugin.intellij.run.suggestedName
-import io.kotest.plugin.intellij.ui.KotestSettingsEditor
 import org.jdom.Element
 import org.jetbrains.jps.model.serialization.PathMacroUtil
 import org.jetbrains.kotlin.psi.KtClassOrObject
 
-class KotestConfiguration(name: String, factory: ConfigurationFactory, project: Project) :
+abstract class KotestConfigurationBase(name: String, factory: ConfigurationFactory, project: Project) :
    JavaTestConfigurationBase(name, JavaRunConfigurationModule(project, false), factory) {
 
    private var alternativeJrePath: String? = ""
@@ -69,8 +66,6 @@ class KotestConfiguration(name: String, factory: ConfigurationFactory, project: 
       packageName != null -> "package"
       else -> "source"
    }
-
-   override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> = KotestSettingsEditor(this)
 
    override fun suggestedName(): String? = RunData(specName, testPath, packageName).suggestedName()
 
