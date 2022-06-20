@@ -39,7 +39,7 @@ class KotestSettingsEditor(runConfiguration: KotestConfiguration) :
          val fragment = SettingsEditorFragment.createTag(
             "test.use.module.path",
             ExecutionBundle.message("do.not.use.module.path.tag"),
-            "Java2",
+            "Java",
             { !it.isUseModulePath },
             BiConsumer<KotestConfiguration, Boolean> { config, value -> config.isUseModulePath = !value }
          )

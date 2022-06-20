@@ -36,12 +36,13 @@ class KotestSettingsEditor(runConfiguration: KotestConfiguration) :
       fragments.addAll(0, listOf(testPathFragment, specClassFragment, packageNameFragment))
 
       if (!project.isDefault) {
+         // the new settings editors support "tags" rather than check boxes
          val fragment = SettingsEditorFragment.createTag(
-            "test.use.module.path",
-            ExecutionBundle.message("do.not.use.module.path.tag"),
-            "Java2",
-            { !it.isUseModulePath },
-            BiConsumer<KotestConfiguration, Boolean> { config, value -> config.isUseModulePath = !value }
+            /* id = */ "test.use.module.path",
+            /* name = */ ExecutionBundle.message("do.not.use.module.path.tag"),
+            /* group = */  "Java",
+            { !it.isUseModulePath }, // gets current value of the tag
+            BiConsumer<KotestConfiguration, Boolean> { config, value -> config.isUseModulePath = !value } // set the tag
          )
          fragments.add(fragment)
       }
@@ -51,25 +52,27 @@ class KotestSettingsEditor(runConfiguration: KotestConfiguration) :
       val jreSelector = DefaultJreSelector.fromModuleDependencies(moduleClasspath.component(), false)
       val jrePath = CommonJavaFragments.createJrePath<KotestConfiguration>(jreSelector)
       fragments.add(createShortenClasspath(moduleClasspath.component(), jrePath, false))
+
+      // jre selector
       fragments.add(jrePath)
    }
 
    private val specClassTextField = EditorTextFieldWithBrowseButton(project, true)
    private val specClassField = LabeledComponent.create(
-      specClassTextField,
-      KotestBundle.getMessage("spec.class.label"),
-      BorderLayout.WEST
+      /* component = */ specClassTextField,
+      /* text = */ KotestBundle.getMessage("spec.class.label"),
+      /* labelConstraint = */ BorderLayout.WEST
    )
 
    private val specClassFragment =
       SettingsEditorFragment<KotestConfiguration, LabeledComponent<EditorTextFieldWithBrowseButton>>(
-         "specClass",
-         KotestBundle.getMessage("spec.class.name"),
-         "Kotest",
-         specClassField,
-         { config, field -> field.component.text = config.getSpecName() ?: "" },
-         { configuration, field -> configuration.setSpecName(field.component.text) },
-         { true }
+         /* id = */ "specClass",
+         /* name = */ KotestBundle.getMessage("spec.class.name"),
+         /* group = */ "Kotest",
+         /* component = */ specClassField,
+         /* reset = */ { config, field -> field.component.text = config.getSpecName() ?: "" },
+         /* apply = */ { configuration, field -> configuration.setSpecName(field.component.text) },
+         /* initialSelection = */ { true }
       )
 
    private val testPathField = LabeledComponent.create(

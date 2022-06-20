@@ -15,6 +15,8 @@ class SpecClassBrowser<T : JComponent>(
 ) : ClassBrowser<T>(project, KotestBundle.getMessage("spec.class.selector")) {
    override fun getFilter(): ClassFilter.ClassFilterWithScope {
       return object : ClassFilter.ClassFilterWithScope {
+
+         // accepted if any parent is a class ending with Spec
          override fun isAccepted(aClass: PsiClass?) =
             aClass?.extendsListTypes?.any { it.name.endsWith("Spec") } ?: false
 

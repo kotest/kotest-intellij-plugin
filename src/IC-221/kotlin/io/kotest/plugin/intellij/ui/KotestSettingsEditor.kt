@@ -37,11 +37,11 @@ class KotestSettingsEditor(runConfiguration: KotestConfiguration) :
 
       if (!project.isDefault) {
          val fragment = SettingsEditorFragment.createTag(
-            "test.use.module.path",
-            ExecutionBundle.message("do.not.use.module.path.tag"),
-            "Java2",
-            { !it.isUseModulePath },
-            BiConsumer<KotestConfiguration, Boolean> { config, value -> config.isUseModulePath = !value }
+            /* id = */ "test.use.module.path",
+            /* name = */ ExecutionBundle.message("do.not.use.module.path.tag"),
+            /* group = */ "Java",
+            /* getter = */ { !it.isUseModulePath },
+            /* setter = */ BiConsumer<KotestConfiguration, Boolean> { config, value -> config.isUseModulePath = !value }
          )
          fragments.add(fragment)
       }
