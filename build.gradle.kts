@@ -95,7 +95,7 @@ val descriptor = plugins.first { it.sourceFolder == productName }
 
 val jetbrainsToken: String by project
 
-version = "1.1." + (System.getenv("GITHUB_RUN_NUMBER") ?: "0-SNAPSHOT")
+version = "1.2." + (System.getenv("GITHUB_RUN_NUMBER") ?: "0-SNAPSHOT")
 
 intellij {
    sandboxDir.set(project.property("sandbox").toString())
