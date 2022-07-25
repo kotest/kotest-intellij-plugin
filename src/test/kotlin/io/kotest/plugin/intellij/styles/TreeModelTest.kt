@@ -35,7 +35,7 @@ class TreeModelTest : LightJavaCodeInsightFixtureTestCase() {
          "/io/kotest/core/spec/style/specs.kt"
       )
 
-      val model = createTreeModel(myFixture.file.virtualFile, myFixture.project, myFixture.file.specs(), myFixture.module)
+//      val model = createTreeModel(myFixture.file.virtualFile, myFixture.project, myFixture.file.specs(), myFixture.module)
 
 //      val root = model.root as DefaultMutableTreeNode
 //      val kotest = root.userObject as KotestRootNodeDescriptor
