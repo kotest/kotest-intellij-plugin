@@ -4,8 +4,7 @@ import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiTreeAnyChangeAbstractAdapter
-import com.intellij.psi.search.FilenameIndex
-import com.intellij.psi.search.GlobalSearchScope
+import io.kotest.plugin.intellij.findFiles
 import io.kotest.plugin.intellij.psi.getAllSuperClasses
 import org.jetbrains.kotlin.idea.core.util.toPsiFile
 import org.jetbrains.kotlin.name.FqName
@@ -48,8 +47,7 @@ fun PsiFile.detectKotestTags(): List<String> {
 
 fun scanTags(project: Project) {
    DumbService.getInstance(project).runWhenSmart {
-      TestExplorerState.tags = FilenameIndex
-         .getVirtualFilesByName(TagsFilename, false, GlobalSearchScope.allScope(project))
+      TestExplorerState.tags = findFiles(project)
          .mapNotNull { it.toPsiFile(project) }
          .flatMap { it.detectKotestTags() }
          .distinct()
