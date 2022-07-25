@@ -3,9 +3,17 @@ package io.kotest.plugin.intellij.styles
 import com.intellij.testFramework.LightProjectDescriptor
 import com.intellij.testFramework.fixtures.LightJavaCodeInsightFixtureTestCase
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.types.shouldBeInstanceOf
 import io.kotest.plugin.intellij.Constants
 import io.kotest.plugin.intellij.psi.specs
+import io.kotest.plugin.intellij.toolwindow.CallbackNodeDescriptor
+import io.kotest.plugin.intellij.toolwindow.IncludeNodeDescriptor
 import io.kotest.plugin.intellij.toolwindow.KotestRootNodeDescriptor
+import io.kotest.plugin.intellij.toolwindow.ModulesNodeDescriptor
+import io.kotest.plugin.intellij.toolwindow.SpecNodeDescriptor
+import io.kotest.plugin.intellij.toolwindow.TagsNodeDescriptor
+import io.kotest.plugin.intellij.toolwindow.TestFileNodeDescriptor
+import io.kotest.plugin.intellij.toolwindow.TestNodeDescriptor
 import io.kotest.plugin.intellij.toolwindow.createTreeModel
 import java.nio.file.Paths
 import javax.swing.tree.DefaultMutableTreeNode
