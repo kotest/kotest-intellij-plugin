@@ -36,8 +36,8 @@ fun PsiFile.classes(): List<KtClass> {
    return this.getChildrenOfType<KtClass>().asList()
 }
 
-fun PsiFile.classesOrObjects(): List<KtClassOrObject> {
-   return this.childrenOfType()
+fun PsiFile.classesOrObjects(): List<> {
+   return this.getChildrenOfType<KtClassOrObject>().asList()
 }
 
 /**
