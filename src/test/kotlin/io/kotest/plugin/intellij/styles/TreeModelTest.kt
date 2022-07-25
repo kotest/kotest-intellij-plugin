@@ -33,28 +33,28 @@ class TreeModelTest : LightJavaCodeInsightFixtureTestCase() {
       val root = model.root as DefaultMutableTreeNode
       val kotest = root.userObject as KotestRootNodeDescriptor
       kotest.presentation.presentableText shouldBe Constants.FrameworkName
-//
-//      val children = root.children().toList() as List<DefaultMutableTreeNode>
-//      children.size shouldBe 2
-//      children[0].userObject.shouldBeInstanceOf<ModulesNodeDescriptor>()
 
-//      children[1].userObject.shouldBeInstanceOf<TagsNodeDescriptor>()
-//
-//      val testfile = children[2]
-//      testfile.userObject.shouldBeInstanceOf<TestFileNodeDescriptor>()
-//
-//      val specs = testfile.children().toList() as List<DefaultMutableTreeNode>
-//      specs.size shouldBe 1
-//      val spec = specs[0]
-//      spec.userObject.shouldBeInstanceOf<SpecNodeDescriptor>()
-//
-//      val elements = spec.children().toList() as List<DefaultMutableTreeNode>
-//      elements.size shouldBe 5
-//
-//      (elements[0].userObject as CallbackNodeDescriptor).presentation.presentableText shouldBe "beforeTest"
-//      (elements[1].userObject as CallbackNodeDescriptor).presentation.presentableText shouldBe "afterTest"
-//      (elements[2].userObject as IncludeNodeDescriptor).presentation.presentableText shouldBe "Include: myfactory"
-//      (elements[3].userObject as IncludeNodeDescriptor).presentation.presentableText shouldBe "Include: myfactory2"
-//      (elements[4].userObject as TestNodeDescriptor).presentation.presentableText shouldBe "a string cannot be blank"
+      val children = root.children().toList() as List<DefaultMutableTreeNode>
+      children.size shouldBe 3
+      children[0].userObject.shouldBeInstanceOf<ModulesNodeDescriptor>()
+
+      children[1].userObject.shouldBeInstanceOf<TagsNodeDescriptor>()
+
+      val testfile = children[2]
+      testfile.userObject.shouldBeInstanceOf<TestFileNodeDescriptor>()
+
+      val specs = testfile.children().toList() as List<DefaultMutableTreeNode>
+      specs.size shouldBe 1
+      val spec = specs[0]
+      spec.userObject.shouldBeInstanceOf<SpecNodeDescriptor>()
+
+      val elements = spec.children().toList() as List<DefaultMutableTreeNode>
+      elements.size shouldBe 5
+
+      (elements[0].userObject as CallbackNodeDescriptor).presentation.presentableText shouldBe "beforeTest"
+      (elements[1].userObject as CallbackNodeDescriptor).presentation.presentableText shouldBe "afterTest"
+      (elements[2].userObject as IncludeNodeDescriptor).presentation.presentableText shouldBe "Include: myfactory"
+      (elements[3].userObject as IncludeNodeDescriptor).presentation.presentableText shouldBe "Include: myfactory2"
+      (elements[4].userObject as TestNodeDescriptor).presentation.presentableText shouldBe "a string cannot be blank"
    }
 }
