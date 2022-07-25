@@ -37,13 +37,13 @@ class TreeModelTest : LightJavaCodeInsightFixtureTestCase() {
 
       val model = createTreeModel(myFixture.file.virtualFile, myFixture.project, myFixture.file.specs(), myFixture.module)
 
-      val root = model.root as DefaultMutableTreeNode
-      val kotest = root.userObject as KotestRootNodeDescriptor
-      kotest.presentation.presentableText shouldBe Constants.FrameworkName
-
-      val children = root.children().toList() as List<DefaultMutableTreeNode>
-      children.size shouldBe 2
-      children[0].userObject.shouldBeInstanceOf<ModulesNodeDescriptor>()
+//      val root = model.root as DefaultMutableTreeNode
+//      val kotest = root.userObject as KotestRootNodeDescriptor
+//      kotest.presentation.presentableText shouldBe Constants.FrameworkName
+//
+//      val children = root.children().toList() as List<DefaultMutableTreeNode>
+//      children.size shouldBe 2
+//      children[0].userObject.shouldBeInstanceOf<ModulesNodeDescriptor>()
 
 //      children[1].userObject.shouldBeInstanceOf<TagsNodeDescriptor>()
 //
