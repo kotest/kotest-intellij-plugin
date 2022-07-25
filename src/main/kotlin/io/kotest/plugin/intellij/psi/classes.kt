@@ -2,7 +2,6 @@ package io.kotest.plugin.intellij.psi
 
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
-import com.intellij.psi.util.childrenOfType
 import org.jetbrains.kotlin.asJava.classes.KtLightClass
 import org.jetbrains.kotlin.idea.caches.resolve.analyze
 import org.jetbrains.kotlin.name.FqName
@@ -36,7 +35,7 @@ fun PsiFile.classes(): List<KtClass> {
    return this.getChildrenOfType<KtClass>().asList()
 }
 
-fun PsiFile.classesOrObjects(): List<> {
+fun PsiFile.classesOrObjects(): List<KtClassOrObject> {
    return this.getChildrenOfType<KtClassOrObject>().asList()
 }
 
