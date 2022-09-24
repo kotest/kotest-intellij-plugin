@@ -9,9 +9,5 @@
          <place><![CDATA[kotlinParameter().ofFunction(0, kotlinFunction().withName("shouldContainJsonKeyValue").definedInPackage("io.kotest.assertions.json"))]]></place>
          <place><![CDATA[kotlinParameter().ofFunction(0, kotlinFunction().withName("shouldNotContainJsonKeyValue").definedInPackage("io.kotest.assertions.json"))]]></place>
          <place><![CDATA[kotlinParameter().ofFunction(0, kotlinFunction().withName("containJsonKeyValue").definedInPackage("io.kotest.assertions.json"))]]></place>
-
-         <place><![CDATA[kotlinParameter().ofFunction(0, kotlinFunction().withName("shouldMatchJsonResource").definedInPackage("io.kotest.assertions.json"))]]></place>
-         <place><![CDATA[kotlinParameter().ofFunction(0, kotlinFunction().withName("shouldNotMatchJsonResource").definedInPackage("io.kotest.assertions.json"))]]></place>
-         <place><![CDATA[kotlinParameter().ofFunction(0, kotlinFunction().withName("matchJsonResource").definedInPackage("io.kotest.assertions.json"))]]></place>
    </injection>
 </component>
