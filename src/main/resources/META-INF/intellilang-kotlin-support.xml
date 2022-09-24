@@ -1,6 +1,5 @@
 <idea-plugin>
    <extensions defaultExtensionNs="org.intellij.intelliLang">
-      <languageSupport implementation="org.intellij.plugins.intelliLang.inject.java.JavaLanguageInjectionSupport"/>
       <injectionConfig config="injections/kotlinInjections.xml"/>
    </extensions>
 </idea-plugin>
