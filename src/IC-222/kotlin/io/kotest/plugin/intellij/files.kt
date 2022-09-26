@@ -11,3 +11,17 @@ fun findFiles(project: Project): List<VirtualFile> {
       .getVirtualFilesByName(TagsFilename, false, GlobalSearchScope.allScope(project))
       .toList()
 }
+
+fun getLocationForFile(
+   project: Project,
+   scope: GlobalSearchScope,
+   name: String,
+   lineNumber: Int
+): PsiLocation<PsiElement>? {
+   return FilenameIndex
+      .getVirtualFilesByName(name, scope)
+      .firstOrNull { it.isTestFile(project) }
+      ?.toPsiFile(project)
+      ?.elementAtLine(lineNumber)
+      ?.toPsiLocation()
+}
