@@ -2,4 +2,4 @@ package io.kotest.plugin.intellij
 
 import com.intellij.ui.content.ContentFactory
 
-fun getContentFactory() = ContentFactory.SERVICE.getInstance()
+fun getContentFactory(): ContentFactory = ContentFactory.SERVICE.getInstance()
