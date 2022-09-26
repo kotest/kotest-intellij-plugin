@@ -8,6 +8,6 @@ import io.kotest.plugin.intellij.toolwindow.TagsFilename
 
 fun findFiles(project: Project): List<VirtualFile> {
    return FilenameIndex
-      .getVirtualFilesByName(project, TagsFilename, false, GlobalSearchScope.allScope(project))
+      .getVirtualFilesByName(TagsFilename, false, GlobalSearchScope.allScope(project))
       .toList()
 }
