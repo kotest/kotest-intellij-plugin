@@ -8,8 +8,10 @@ import org.jetbrains.kotlin.idea.caches.resolve.analyze
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtClassOrObject
+import org.jetbrains.kotlin.psi.KtObjectDeclaration
 import org.jetbrains.kotlin.psi.psiUtil.getChildrenOfType
 import org.jetbrains.kotlin.psi.psiUtil.getStrictParentOfType
+import org.jetbrains.kotlin.psi.psiUtil.isAbstract
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.descriptorUtil.classId
 import org.jetbrains.kotlin.types.typeUtil.supertypes
@@ -71,3 +73,14 @@ fun KtClassOrObject.getAllSuperClasses(): List<FqName> {
          }.getOrNull()
       }.filterNot { it.toString() == "kotlin.Any" }
 }
+
+/**
+ * Returns true if this [KtClassOrObject] points to a runnable spec object.
+ */
+fun KtClassOrObject.isRunnableSpec(): Boolean = when (this) {
+   is KtObjectDeclaration -> isSpec()
+   is KtClass -> isSpec() && !isAbstract()
+   else -> false
+}
+
+fun KtClassOrObject.takeIfRunnableSpec(): KtClassOrObject? = if (isRunnableSpec()) this else null

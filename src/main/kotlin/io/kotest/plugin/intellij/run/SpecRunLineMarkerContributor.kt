@@ -3,9 +3,11 @@ package io.kotest.plugin.intellij.run
 import com.intellij.execution.lineMarker.ExecutorAction
 import com.intellij.execution.lineMarker.RunLineMarkerContributor
 import com.intellij.icons.AllIcons
+import com.intellij.openapi.module.ModuleUtil
 import com.intellij.psi.PsiElement
 import com.intellij.psi.impl.source.tree.LeafPsiElement
-import io.kotest.plugin.intellij.psi.getSpecEntryPoint
+import io.kotest.plugin.intellij.psi.asKtClassOrObjectOrNull
+import io.kotest.plugin.intellij.psi.isRunnableSpec
 import io.kotest.plugin.intellij.psi.isTestFile
 import io.kotest.plugin.intellij.testMode
 import org.jetbrains.kotlin.psi.KtClassOrObject
@@ -26,9 +28,11 @@ class SpecRunLineMarkerContributor : RunLineMarkerContributor() {
       when (element) {
          // the docs say to only run a line marker for a leaf
          is LeafPsiElement -> {
+            // only consider tests
+            if (!testMode && !ModuleUtil.hasTestSourceRoots(element.project)) return null
             if (!testMode && !element.containingFile.isTestFile()) return null
-            val spec = element.getSpecEntryPoint()
-            if (spec != null) {
+            val spec = element.asKtClassOrObjectOrNull()
+            if (spec != null && spec.isRunnableSpec()) {
                return Info(
                   icon,
                   com.intellij.util.Function<PsiElement, String> { "Run ${spec.fqName?.shortName()}" },
@@ -40,3 +44,4 @@ class SpecRunLineMarkerContributor : RunLineMarkerContributor() {
       return null
    }
 }
+
