@@ -10,6 +10,7 @@ import io.kotest.plugin.intellij.fqname
 import io.kotest.plugin.intellij.psi.callbacks
 import io.kotest.plugin.intellij.psi.includes
 import io.kotest.plugin.intellij.psi.specStyle
+import org.jetbrains.kotlin.idea.base.facet.isTestModule
 import org.jetbrains.kotlin.idea.facet.KotlinFacet
 import org.jetbrains.kotlin.idea.util.projectStructure.allModules
 import org.jetbrains.kotlin.psi.KtClassOrObject
@@ -56,7 +57,7 @@ fun createTreeModel(
 
       project.allModules()
          .filter { it.isKotlin() }
-         .filter { it.name.endsWith("jvmTest") || it.name.endsWith("test") }
+         .filter { it.isTestModule }
          .forEach {
             val moduleDescriptor = ModuleNodeDescriptor(it, project, allModulesDescriptor)
             val moduleNode = DefaultMutableTreeNode(moduleDescriptor)
