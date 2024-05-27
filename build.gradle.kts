@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
-
 buildscript {
    repositories {
       mavenCentral()
@@ -157,8 +155,8 @@ dependencies {
 
 sourceSets {
    main {
-      withConvention(KotlinSourceSet::class) {
-         kotlin.srcDirs("src/${descriptor.sourceFolder}/kotlin")
+      kotlin {
+         srcDir("src/${descriptor.sourceFolder}/kotlin")
       }
       resources {
          srcDir("src/${descriptor.sourceFolder}/resources")
