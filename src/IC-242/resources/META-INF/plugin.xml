@@ -14,7 +14,6 @@
    <version>1.0.0</version>
    <idea-version since-build="211.6085.26"/>
 
-   <depends>org.jetbrains.kotlin</depends>
    <depends>com.intellij.modules.java</depends>
    <depends>org.jetbrains.plugins.gradle</depends>
    <depends optional="true" config-file="intellilang-kotlin-support.xml">org.intellij.intelliLang</depends>
