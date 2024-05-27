@@ -151,6 +151,7 @@ dependencies {
    // needed for the resource files which are loaded into java light tests
    testImplementation(libs.test.kotest.framework.api)
    testImplementation(libs.test.kotest.assertions.core)
+   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
 }
 
 sourceSets {
