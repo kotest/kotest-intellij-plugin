@@ -84,8 +84,8 @@ dependencies {
 
    intellijPlatform {
       intellijIdeaCommunity("242.12881.66")
-//      bundledPlugin("com.intellij.java")
-//      bundledPlugin("org.jetbrains.kotlin")
+      bundledPlugin("com.intellij.java")
+      bundledPlugin("org.jetbrains.kotlin")
    }
 
    // we bundle this for 4.1 support
