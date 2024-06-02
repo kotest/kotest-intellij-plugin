@@ -116,9 +116,9 @@ val plugins = listOf(
       deps = listOf("java", "org.jetbrains.plugins.gradle", "org.jetbrains.kotlin")
    ),
    PluginDescriptor(
-      since = "242.10180.37", // this version is 2024.2
+      since = "242.14146.19", // this version is 2024.2
       until = "242.*",
-      sdkVersion = "242.10180-EAP-CANDIDATE-SNAPSHOT",
+      sdkVersion = "242.14146-EAP-CANDIDATE-SNAPSHOT",
       sourceFolder = "IC-242",
       deps = listOf("java", "org.jetbrains.plugins.gradle", "org.jetbrains.kotlin")
    ),
@@ -148,7 +148,7 @@ dependencies {
    implementation(libs.javax.activation)
 
    // we bundle this for 4.1 support
-   // in kotest 4.2.0 the launcher has moved to a stand alone module
+   // in kotest 4.2.0 the launcher has moved to a standalone module
    implementation(libs.runtime.kotest.legacy.launcher)
 
    // this is needed to use the launcher in 4.2.0, in 4.2.1+ the launcher is built
