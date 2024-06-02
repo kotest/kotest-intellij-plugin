@@ -57,16 +57,16 @@ val plugins = listOf(
    ),
    PluginDescriptor(
       since = "241.15989.150", // this version is 2024.1
-      until = "241.*",
+      until = "242.*",
       intellijVersion = "2024.1.1",
       sourceFolder = "IC-241",
    ),
-   PluginDescriptor(
-      since = "242.12881.66", // this version is 2024.2
-      until = "243.*",
-      intellijVersion = "242.12881.66",
-      sourceFolder = "IC-242",
-   ),
+//   PluginDescriptor(
+//      since = "242.12881.66", // this version is 2024.2
+//      until = "243.*",
+//      intellijVersion = "242.12881.66",
+//      sourceFolder = "IC-242",
+//   ),
 )
 
 val productName = System.getenv("PRODUCT_NAME") ?: "IC-241"
