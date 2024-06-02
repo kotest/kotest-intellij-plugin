@@ -71,7 +71,7 @@ val plugins = listOf(
 )
 
 val productName = System.getenv("PRODUCT_NAME") ?: "IC-241"
-val jvmTargetVersion = System.getenv("JVM_TARGET") ?: "17"
+val jvmTargetVersion = System.getenv("JVM_TARGET") ?: "11"
 val descriptor = plugins.firstOrNull { it.sourceFolder == productName } ?: error("SDK not found $productName")
 
 val jetbrainsToken: String by project
@@ -149,6 +149,11 @@ tasks {
       kotlinOptions {
          jvmTarget = jvmTargetVersion
       }
+   }
+
+   java {
+      sourceCompatibility = JavaVersion.VERSION_11
+      targetCompatibility = JavaVersion.VERSION_11
    }
 
 //   tasks {
