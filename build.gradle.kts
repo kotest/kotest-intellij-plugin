@@ -83,7 +83,7 @@ dependencies {
    implementation(libs.javax.activation)
 
    intellijPlatform {
-      intellijIdeaCommunity("242.12881.66")
+      intellijIdeaCommunity(descriptor.intellijVersion)
       bundledPlugin("com.intellij.java")
       bundledPlugin("org.jetbrains.kotlin")
    }
