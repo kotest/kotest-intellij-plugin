@@ -61,6 +61,7 @@ val plugins = listOf(
       intellijVersion = "2024.1.1",
       sourceFolder = "IC-241",
    ),
+   // this is broken until the next release of the gradle plugin
 //   PluginDescriptor(
 //      since = "242.12881.66", // this version is 2024.2
 //      until = "243.*",
