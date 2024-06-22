@@ -67,7 +67,7 @@ class ExpandAllAction(
 
 class FilterCallbacksAction(
    project: Project,
-) : ToggleAction("Filter Vallbacks", null, AllIcons.Nodes.Controller) {
+) : ToggleAction("Filter Callbacks", null, AllIcons.Nodes.Controller) {
    private val kotestService: KotestService = project.getService(KotestService::class.java)
 
    override fun getActionUpdateThread() = ActionUpdateThread.EDT
