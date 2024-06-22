@@ -5,7 +5,6 @@ import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import org.jetbrains.kotlin.psi.psiUtil.endOffset
 import org.jetbrains.kotlin.psi.psiUtil.startOffset
-import org.junit.Test
 import java.nio.file.Paths
 
 class OffsetsTest : LightJavaCodeInsightFixtureTestCase() {
@@ -14,7 +13,6 @@ class OffsetsTest : LightJavaCodeInsightFixtureTestCase() {
       return path.toString()
    }
 
-   @Test
    fun testLineOffsets() {
       val psiFile = myFixture.configureByFile("/funspec.kt")
       val offsets = psiFile.offsetForLine(21)
@@ -23,7 +21,6 @@ class OffsetsTest : LightJavaCodeInsightFixtureTestCase() {
       offsets.last shouldBe 353
    }
 
-   @Test
    fun testFindElementForAGivenLine() {
       val psiFile = myFixture.configureByFile("/funspec.kt")
       val element = psiFile.elementAtLine(24)

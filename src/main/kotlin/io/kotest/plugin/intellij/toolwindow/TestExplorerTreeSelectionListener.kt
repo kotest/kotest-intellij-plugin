@@ -18,14 +18,13 @@ class TestExplorerTreeSelectionListener(
       // this event is also fired when the path is "unselected" by clicking inside the editor
       // and isAddedPath will return false for that scenario (which we don't want to react to)
       if (e.isAddedPath && kotestService.autoscrollToSource) {
-         val psi =
-            when (val node = e.path.nodeDescriptor()) {
-               is SpecNodeDescriptor -> node.psi
-               is CallbackNodeDescriptor -> node.psi
-               is TestNodeDescriptor -> node.psi
-               is IncludeNodeDescriptor -> node.include.psi
-               else -> null
-            }
+         val psi = when (val node = e.path.nodeDescriptor()) {
+            is SpecNodeDescriptor -> node.psi
+            is CallbackNodeDescriptor -> node.psi
+            is TestNodeDescriptor -> node.psi
+            is IncludeNodeDescriptor -> node.include.psi
+            else -> null
+         }
 
          when (psi) {
             is NavigatablePsiElement -> psi.navigate(false)
