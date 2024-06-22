@@ -2,7 +2,6 @@ package io.kotest.plugin.intellij.toolwindow
 
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.EDT
-import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.module.ModuleUtilCore
 import com.intellij.openapi.project.DumbService
@@ -25,7 +24,6 @@ import org.jetbrains.kotlin.psi.KtProperty
 import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.DefaultTreeModel
 import javax.swing.tree.TreeModel
-import kotlin.properties.Delegates
 import kotlin.properties.Delegates.observable
 
 @Service(Service.Level.PROJECT)
@@ -33,6 +31,10 @@ class KotestService(
    private val project: Project,
    private val scope: CoroutineScope,
 ) {
+
+   @Suppress("unused") // Will be used on IC-223
+   constructor(project: Project) : this(project, CoroutineScope(Dispatchers.Default))
+
    var showCallbacks by observable(true) { _, _, _ -> reloadModelInBackgroundThread() }
    var showTags by observable(true) { _, _, _ -> reloadModelInBackgroundThread() }
    var showModules by observable(true) { _, _, _ -> reloadModelInBackgroundThread() }
