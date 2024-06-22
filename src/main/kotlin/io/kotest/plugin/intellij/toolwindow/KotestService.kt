@@ -1,5 +1,6 @@
 package io.kotest.plugin.intellij.toolwindow
 
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.components.Service
@@ -50,7 +51,8 @@ class KotestService(
    private fun reloadModelInBackgroundThread() {
       scope.launch {
          withContext(Dispatchers.Default) {
-            runReadAction {
+            // TODO: Just use runReadAction function after dropping IC-223
+            ApplicationManager.getApplication().runReadAction {
                reloadModel(currentFile)
             }
          }
@@ -90,7 +92,8 @@ class KotestService(
 
    fun scanTags() {
       scope.launch(Dispatchers.Default) {
-         runReadAction {
+         // TODO: Just use runReadAction function after dropping IC-223
+         ApplicationManager.getApplication().runReadAction {
             tags =
                findFiles(project)
                   .mapNotNull { it.toPsiFile(project) }
