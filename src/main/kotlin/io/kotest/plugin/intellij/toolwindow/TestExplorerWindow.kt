@@ -56,7 +56,7 @@ class TestExplorerWindow(private val project: Project) : SimpleToolWindowPanel(t
                   val files = events.mapNotNull { it.file }
                   val modified = files.firstOrNull { it.name == selectedFile.name }
                   if (modified != null)
-                     kotestService.selectFile(modified)
+                     kotestService.currentFile = modified
                }
             }
          }
@@ -74,7 +74,7 @@ class TestExplorerWindow(private val project: Project) : SimpleToolWindowPanel(t
             override fun selectionChanged(event: FileEditorManagerEvent) {
                val file = fileEditorManager.selectedEditor?.file
                if (file != null) {
-                  kotestService.selectFile(file)
+                  kotestService.currentFile = file
                }
             }
          }
@@ -88,7 +88,7 @@ class TestExplorerWindow(private val project: Project) : SimpleToolWindowPanel(t
                val selectedFile = fileEditorManager.selectedEditor?.file
                if (selectedFile != null) {
                   if (file.virtualFile.name == selectedFile.name) {
-                     kotestService.selectFile(file.virtualFile)
+                     kotestService.currentFile = file.virtualFile
                   }
                }
             }
@@ -104,7 +104,7 @@ class TestExplorerWindow(private val project: Project) : SimpleToolWindowPanel(t
    private fun refreshContent() {
       kotestService.scanTags()
       fileEditorManager.selectedEditor?.file?.let {
-         kotestService.selectFile(it)
+         kotestService.currentFile = it
       }
    }
 }

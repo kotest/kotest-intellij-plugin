@@ -24,60 +24,34 @@ import org.jetbrains.kotlin.psi.KtProperty
 import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.DefaultTreeModel
 import javax.swing.tree.TreeModel
+import kotlin.properties.Delegates
+import kotlin.properties.Delegates.observable
 
 @Service(Service.Level.PROJECT)
 class KotestService(
    private val project: Project,
    private val scope: CoroutineScope,
 ) {
-   var showCallbacks: Boolean = true
-      set(value) {
-         field = value
-         reloadModel(currentFile)
-      }
+   var showCallbacks by observable(true) { _, _, _ -> reloadModelInBackgroundThread() }
+   var showTags by observable(true) { _, _, _ -> reloadModelInBackgroundThread() }
+   var showModules by observable(true) { _, _, _ -> reloadModelInBackgroundThread() }
+   var showIncludes by observable(true) { _, _, _ -> reloadModelInBackgroundThread() }
+   var autoscrollToSource by observable(true) { _, _, _ -> reloadModelInBackgroundThread() }
 
-   var showTags = true
-      set(value) {
-         field = value
-         reloadModel(currentFile)
-      }
-
-   var showModules = true
-      set(value) {
-         field = value
-         reloadModel(currentFile)
-      }
-
-   var showIncludes = true
-      set(value) {
-         field = value
-         reloadModel(currentFile)
-      }
-
-   var autoscrollToSource = true
-      set(value) {
-         field = value
-         reloadModel(currentFile)
-      }
-
-   var tags: List<String> = emptyList()
-      set(value) {
-         field = value
-         reloadModel(currentFile)
-      }
+   var tags: List<String> by observable(emptyList()) { _, _, _ -> reloadModelInBackgroundThread() }
+   var currentFile: VirtualFile? by observable(null) { _, _, _ -> reloadModelInBackgroundThread() }
 
    private val modelListeners = mutableListOf<KotestModelListener>()
-   private val currentFile: VirtualFile? = null
 
    fun registerModelListener(kotestModelListener: KotestModelListener) {
       modelListeners.add(kotestModelListener)
    }
 
-   fun selectFile(file: VirtualFile) {
+   private fun reloadModelInBackgroundThread() {
       scope.launch {
          withContext(Dispatchers.Default) {
             runReadAction {
-               reloadModel(file)
+               reloadModel(currentFile)
             }
          }
       }
@@ -88,7 +62,7 @@ class KotestService(
       retries: Int = 10,
    ) {
       if (file == null || !file.isTestFile(project)) {
-         setModel(noFileModel())
+         broadcastUpdatedModel(noFileModel)
       } else {
          val module = ModuleUtilCore.findModuleForFile(file, project) ?: return
          val psi = PsiManager.getInstance(project).findFile(file) ?: return
@@ -98,25 +72,20 @@ class KotestService(
                if (retries > 0) {
                   reloadModel(file, retries - 1)
                } else {
-                  noFileModel()
+                  noFileModel
                }
             }
          } else {
             val specs = psi.specs()
-            setModel(createTreeModel(file, project, specs, module))
+            broadcastUpdatedModel(createTreeModel(file, project, specs, module))
          }
       }
    }
 
-   private fun setModel(model: TreeModel) {
+   private fun broadcastUpdatedModel(model: TreeModel) {
       scope.launch(Dispatchers.EDT) {
          modelListeners.forEach { it.setModel(model) }
       }
-   }
-
-   private fun noFileModel(): TreeModel {
-      val root = DefaultMutableTreeNode("<no test file selected>")
-      return DefaultTreeModel(root)
    }
 
    fun scanTags() {
@@ -143,4 +112,8 @@ class KotestService(
             else -> null
          }
       }
+
+   companion object {
+      private val noFileModel = DefaultTreeModel(DefaultMutableTreeNode("<no test file selected>"))
+   }
 }
