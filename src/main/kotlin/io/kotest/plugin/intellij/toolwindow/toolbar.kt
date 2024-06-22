@@ -79,7 +79,6 @@ class FilterCallbacksAction(
       state: Boolean,
    ) {
       kotestService.showCallbacks = state
-//      tree.reloadModel()
    }
 }
 

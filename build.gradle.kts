@@ -20,13 +20,12 @@ repositories {
 
 
 data class PluginDescriptor(
-    val since: String, // earliest version string this is compatible with
-    val until: String, // latest version string this is compatible with, can be wildcard like 202.*
-    // https://github.com/JetBrains/gradle-intellij-plugin#intellij-platform-properties
-    val sdkVersion: String, // the version string passed to the intellij sdk gradle plugin
-    val sourceFolder: String, // used as the source root for specifics of this build
-    val deps: List<String>, // dependent plugins of this plugin
-    val coroutinesVersion: String,
+   val since: String, // earliest version string this is compatible with
+   val until: String, // latest version string this is compatible with, can be wildcard like 202.*
+   // https://github.com/JetBrains/gradle-intellij-plugin#intellij-platform-properties
+   val sdkVersion: String, // the version string passed to the intellij sdk gradle plugin
+   val sourceFolder: String, // used as the source root for specifics of this build
+   val deps: List<String> // dependent plugins of this plugin
 )
 
 // https://jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html
@@ -51,40 +50,35 @@ val plugins = listOf(
       until = "223.*",
       sdkVersion = "IC-2022.3",
       sourceFolder = "IC-223",
-      deps = listOf("java", "org.jetbrains.plugins.gradle", "org.jetbrains.kotlin"),
-      coroutinesVersion = "1.7.0"
+      deps = listOf("java", "org.jetbrains.plugins.gradle", "org.jetbrains.kotlin")
    ),
    PluginDescriptor(
       since = "231.8109.163", // this version is 2023.1 release
       until = "231.*",
       sdkVersion = "IC-2023.1",
       sourceFolder = "IC-231",
-      deps = listOf("java", "org.jetbrains.plugins.gradle", "org.jetbrains.kotlin"),
-      coroutinesVersion = "1.7.0"
+      deps = listOf("java", "org.jetbrains.plugins.gradle", "org.jetbrains.kotlin")
    ),
    PluginDescriptor(
       since = "232.5150.116", // this version is 2023.2
       until = "232.*",
       sdkVersion = "IC-2023.2",
       sourceFolder = "IC-232",
-      deps = listOf("java", "org.jetbrains.plugins.gradle", "org.jetbrains.kotlin"),
-      coroutinesVersion = "1.7.0"
+      deps = listOf("java", "org.jetbrains.plugins.gradle", "org.jetbrains.kotlin")
    ),
    PluginDescriptor(
       since = "233.9802.16", // this version is 2023.3
       until = "233.*",
       sdkVersion = "IC-2023.3",
       sourceFolder = "IC-233",
-      deps = listOf("java", "org.jetbrains.plugins.gradle", "org.jetbrains.kotlin"),
-      coroutinesVersion = "1.7.0"
+      deps = listOf("java", "org.jetbrains.plugins.gradle", "org.jetbrains.kotlin")
    ),
    PluginDescriptor(
       since = "241.15989.150", // this version is 2024.1
       until = "242.*",
       sdkVersion = "IC-2024.1.1",
       sourceFolder = "IC-241",
-      deps = listOf("java", "org.jetbrains.plugins.gradle", "org.jetbrains.kotlin"),
-      coroutinesVersion = "1.8.1"
+      deps = listOf("java", "org.jetbrains.plugins.gradle", "org.jetbrains.kotlin")
    ),
 //   PluginDescriptor(
 //      since = "241.17011.108", // this version is 2024.2
@@ -112,7 +106,6 @@ intellij {
    downloadSources.set(true)
    type.set("IC")
    updateSinceUntilBuild.set(false)
-   // add coroutines core
 }
 
 dependencies {
@@ -130,7 +123,7 @@ dependencies {
    // needed for the resource files which are loaded into java light tests
    testImplementation(libs.test.kotest.framework.api)
    testImplementation(libs.test.kotest.assertions.core)
-   testRuntimeOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:${descriptor.coroutinesVersion}")
+   testRuntimeOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
 }
 
 sourceSets {
