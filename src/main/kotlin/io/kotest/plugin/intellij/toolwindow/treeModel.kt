@@ -27,7 +27,7 @@ fun createTreeModel(
    module: Module
 ): TreeModel {
 
-   val kotestService = project.getService(KotestService::class.java)
+   val kotestTestExplorerService = project.getService(KotestTestExplorerService::class.java)
    val kotest = KotestRootNodeDescriptor(project)
    val root = DefaultMutableTreeNode(kotest)
 
@@ -49,7 +49,7 @@ fun createTreeModel(
       }
    }
 
-   if (kotestService.showModules) {
+   if (kotestTestExplorerService.showModules) {
 
       val allModulesDescriptor = ModulesNodeDescriptor(project)
       val allModulesNode = DefaultMutableTreeNode(allModulesDescriptor)
@@ -65,13 +65,13 @@ fun createTreeModel(
          }
    }
 
-   if (kotestService.showTags) {
+   if (kotestTestExplorerService.showTags) {
 
       val descriptor = TagsNodeDescriptor(project)
       val node = DefaultMutableTreeNode(descriptor)
       root.add(node)
 
-      kotestService.tags.forEach {
+      kotestTestExplorerService.tags.forEach {
          val tagDescriptor = TagNodeDescriptor(it, project, descriptor)
          val tagNode = DefaultMutableTreeNode(tagDescriptor)
          node.add(tagNode)
@@ -92,7 +92,7 @@ fun createTreeModel(
          val specNode = DefaultMutableTreeNode(specDescriptor)
          fileNode.add(specNode)
 
-         if (kotestService.showCallbacks) {
+         if (kotestTestExplorerService.showCallbacks) {
             val callbacks = spec.callbacks()
             callbacks.forEach {
                val callbackDescriptor = CallbackNodeDescriptor(project, specDescriptor, it.psi, it)
@@ -101,7 +101,7 @@ fun createTreeModel(
             }
          }
 
-         if (kotestService.showIncludes) {
+         if (kotestTestExplorerService.showIncludes) {
             val includes = spec.includes()
             includes.forEach {
                val includeDescriptor = IncludeNodeDescriptor(project, specDescriptor, it.psi, it)

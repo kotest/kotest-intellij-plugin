@@ -26,13 +26,20 @@ import javax.swing.tree.DefaultTreeModel
 import javax.swing.tree.TreeModel
 import kotlin.properties.Delegates.observable
 
+/**
+ * Manages state related to the test explorer tool window, including:
+ *   - Currently selected options in the UI
+ *   - The current file being displayed
+ *   - The tags found in the project
+ */
 @Service(Service.Level.PROJECT)
-class KotestService(
+class KotestTestExplorerService(
    private val project: Project,
    private val scope: CoroutineScope,
 ) {
 
-   @Suppress("unused") // Will be used on IC-223
+   // TODO: Remove when dropping IC-223 support.
+   @Suppress("unused")
    constructor(project: Project) : this(project, CoroutineScope(Dispatchers.Default))
 
    var showCallbacks by observable(true) { _, _, _ -> reloadModelInBackgroundThread() }
@@ -44,11 +51,15 @@ class KotestService(
    var tags: List<String> by observable(emptyList()) { _, _, _ -> reloadModelInBackgroundThread() }
    var currentFile: VirtualFile? by observable(null) { _, _, _ -> reloadModelInBackgroundThread() }
 
-   private val modelListeners = mutableListOf<KotestModelListener>()
-
-   fun registerModelListener(kotestModelListener: KotestModelListener) {
-      modelListeners.add(kotestModelListener)
+   /**
+    * Interface used by dependent components to receive updates to the tree model.
+    */
+   interface ModelListener {
+      fun setModel(treeModel: TreeModel)
    }
+
+   private val modelListeners = mutableListOf<ModelListener>()
+   fun registerModelListener(modelListener: ModelListener) { modelListeners.add(modelListener) }
 
    private fun reloadModelInBackgroundThread() {
       scope.launch {

@@ -12,12 +12,12 @@ import javax.swing.event.TreeSelectionListener
 class TestExplorerTreeSelectionListener(
    val project: Project,
 ) : TreeSelectionListener {
-   private val kotestService: KotestService = project.getService(KotestService::class.java)
+   private val kotestTestExplorerService: KotestTestExplorerService = project.getService(KotestTestExplorerService::class.java)
 
    override fun valueChanged(e: TreeSelectionEvent) {
       // this event is also fired when the path is "unselected" by clicking inside the editor
       // and isAddedPath will return false for that scenario (which we don't want to react to)
-      if (e.isAddedPath && kotestService.autoscrollToSource) {
+      if (e.isAddedPath && kotestTestExplorerService.autoscrollToSource) {
          val psi = when (val node = e.path.nodeDescriptor()) {
             is SpecNodeDescriptor -> node.psi
             is CallbackNodeDescriptor -> node.psi

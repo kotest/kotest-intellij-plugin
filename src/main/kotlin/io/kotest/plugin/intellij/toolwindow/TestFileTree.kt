@@ -8,9 +8,9 @@ import javax.swing.tree.TreeSelectionModel
 class TestFileTree(
    project: Project,
 ) : com.intellij.ui.treeStructure.Tree(),
-   KotestModelListener {
+   KotestTestExplorerService.ModelListener {
    private val testExplorerTreeSelectionListener = TestExplorerTreeSelectionListener(project)
-   private val kotestService: KotestService = project.getService(KotestService::class.java)
+   private val kotestTestExplorerService: KotestTestExplorerService = project.getService(KotestTestExplorerService::class.java)
 
    init {
       selectionModel.selectionMode = TreeSelectionModel.SINGLE_TREE_SELECTION
@@ -19,7 +19,7 @@ class TestFileTree(
       cellRenderer = NodeRenderer()
       // listens to changes in the selections
       addTreeSelectionListener(testExplorerTreeSelectionListener)
-      kotestService.registerModelListener(this)
+      kotestTestExplorerService.registerModelListener(this)
    }
 
    override fun setModel(treeModel: TreeModel) {

@@ -17,12 +17,12 @@ class KotestTagFileListener(
    private val tree: TestFileTree,
    project: Project,
 ) : PsiTreeAnyChangeAbstractAdapter() {
-   private val kotestService: KotestService = project.getService(KotestService::class.java)
+   private val kotestTestExplorerService: KotestTestExplorerService = project.getService(KotestTestExplorerService::class.java)
 
    override fun onChange(file: PsiFile?) {
       if (file == null) return
       if (file.name == TagsFilename) {
-         kotestService.scanTags()
+         kotestTestExplorerService.scanTags()
       }
    }
 }
