@@ -62,12 +62,10 @@ class KotestTestExplorerService(
    fun registerModelListener(modelListener: ModelListener) { modelListeners.add(modelListener) }
 
    private fun reloadModelInBackgroundThread() {
-      scope.launch {
-         withContext(Dispatchers.Default) {
-            // TODO: Just use runReadAction function after dropping IC-223
-            ApplicationManager.getApplication().runReadAction {
-               reloadModel(currentFile)
-            }
+      scope.launch(Dispatchers.Default) {
+         // TODO: Just use runReadAction function after dropping IC-223
+         ApplicationManager.getApplication().runReadAction {
+            reloadModel(currentFile)
          }
       }
    }
