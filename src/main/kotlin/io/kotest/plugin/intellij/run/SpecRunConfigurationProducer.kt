@@ -8,7 +8,6 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import io.kotest.plugin.intellij.KotestConfigurationFactory
 import io.kotest.plugin.intellij.KotestConfigurationType
-import io.kotest.plugin.intellij.KotestRunConfiguration
 import io.kotest.plugin.intellij.psi.asKtClassOrObjectOrNull
 import io.kotest.plugin.intellij.psi.isRunnableSpec
 import org.jetbrains.kotlin.lexer.KtKeywordToken
@@ -20,6 +19,7 @@ import org.jetbrains.kotlin.psi.KtClassOrObject
  *
  * This producer creates run configurations for spec classes (run all).
  */
+@Deprecated("Migrating to Kotest specific tasks")
 class SpecRunConfigurationProducer : LazyRunConfigurationProducer<KotestRunConfiguration>() {
 
    override fun getConfigurationFactory(): ConfigurationFactory = KotestConfigurationFactory(KotestConfigurationType())

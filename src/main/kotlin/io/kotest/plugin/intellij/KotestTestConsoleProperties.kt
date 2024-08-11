@@ -6,7 +6,9 @@ import com.intellij.execution.testframework.actions.AbstractRerunFailedTestsActi
 import com.intellij.execution.testframework.sm.runner.SMTestLocator
 import com.intellij.execution.ui.ConsoleView
 import com.intellij.psi.search.GlobalSearchScope
+import io.kotest.plugin.intellij.run.KotestRunConfiguration
 
+@Deprecated("Migrating to Kotest external system runner")
 class KotestTestConsoleProperties(
    config: KotestRunConfiguration,
    executor: Executor

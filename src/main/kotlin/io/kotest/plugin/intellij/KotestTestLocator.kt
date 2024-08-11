@@ -3,6 +3,7 @@ package io.kotest.plugin.intellij
 import com.intellij.execution.Location
 import com.intellij.execution.PsiLocation
 import com.intellij.execution.testframework.sm.runner.SMTestLocator
+import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.ModificationTracker
 import com.intellij.psi.PsiElement
@@ -23,7 +24,7 @@ import io.kotest.plugin.intellij.psi.toPsiLocation
  *
  * Kotest 4 reported it's located hints as kotest://class:linenumber
  */
-class KotestTestLocator : SMTestLocator {
+class KotestTestLocator : SMTestLocator, DumbAware {
 
    override fun getLocation(
       protocol: String,

@@ -6,7 +6,6 @@ import com.intellij.execution.actions.LazyRunConfigurationProducer
 import com.intellij.execution.configurations.ConfigurationFactory
 import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiElement
-import io.kotest.plugin.intellij.KotestRunConfiguration
 import io.kotest.plugin.intellij.KotestConfigurationFactory
 import io.kotest.plugin.intellij.KotestConfigurationType
 import io.kotest.plugin.intellij.psi.enclosingKtClass
@@ -21,6 +20,7 @@ import io.kotest.plugin.intellij.Test
  *
  * This producer creates run configurations for individual tests.
  */
+@Deprecated("Migrating to Kotest specific tasks")
 class TestPathRunConfigurationProducer : LazyRunConfigurationProducer<KotestRunConfiguration>() {
 
    /**

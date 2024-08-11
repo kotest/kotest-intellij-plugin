@@ -8,7 +8,6 @@ import com.intellij.execution.testframework.TestSearchScope
 import com.intellij.openapi.module.Module
 import com.intellij.util.PathUtil
 import io.kotest.plugin.intellij.Constants
-import io.kotest.plugin.intellij.KotestRunConfiguration
 import java.io.File
 
 class KotestRunnableState(

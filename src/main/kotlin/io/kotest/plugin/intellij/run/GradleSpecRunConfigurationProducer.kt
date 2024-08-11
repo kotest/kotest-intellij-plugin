@@ -11,6 +11,7 @@ import org.jetbrains.plugins.gradle.execution.test.runner.TestClassGradleConfigu
 /**
  * Shows a gradle run icon if the test runner is set to gradle or choose per test.
  */
+@Deprecated("Migrating to Kotest specific tasks")
 class GradleSpecRunConfigurationProducer : TestClassGradleConfigurationProducer() {
 
    override fun getPsiClassForLocation(contextLocation: Location<*>): PsiClass? {

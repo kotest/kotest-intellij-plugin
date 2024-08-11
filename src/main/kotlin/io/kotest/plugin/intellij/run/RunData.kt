@@ -7,6 +7,7 @@ import org.jetbrains.kotlin.psi.KtClassOrObject
 /**
  * Holds state for generating suggested names for our config.
  */
+@Deprecated("Migrating to Kotest external system runner")
 data class RunData(
    val specName: String?,
    val testPath: String?,

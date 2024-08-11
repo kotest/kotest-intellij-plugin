@@ -8,6 +8,8 @@ class Constants {
    // kotst 4.1.x -> 4.6.x protocol string
    val OldLocatorProtocol = "kotest"
    val FrameworkId = "ioKotest"
+
+   val gradleTaskName = "kotest"
 }
 
 // flip this bit in tests

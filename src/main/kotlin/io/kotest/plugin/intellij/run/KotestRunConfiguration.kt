@@ -1,6 +1,6 @@
 @file:Suppress("RedundantOverride")
 
-package io.kotest.plugin.intellij
+package io.kotest.plugin.intellij.run
 
 import com.intellij.execution.AlternativeJrePathConverter
 import com.intellij.execution.Executor
@@ -24,14 +24,13 @@ import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiMethod
 import com.intellij.refactoring.listeners.RefactoringElementListener
-import io.kotest.plugin.intellij.run.KotestRunnableState
-import io.kotest.plugin.intellij.run.RunData
-import io.kotest.plugin.intellij.run.suggestedName
+import io.kotest.plugin.intellij.KotestTestConsoleProperties
 import io.kotest.plugin.intellij.ui.KotestSettingsEditor
 import org.jdom.Element
 import org.jetbrains.jps.model.serialization.PathMacroUtil
 import org.jetbrains.kotlin.psi.KtClassOrObject
 
+@Deprecated("Migrating to Kotest external system runner")
 class KotestRunConfiguration(name: String, factory: ConfigurationFactory, project: Project) :
    JavaTestConfigurationBase(name, JavaRunConfigurationModule(project, false), factory),
    TargetEnvironmentAwareRunProfile {
