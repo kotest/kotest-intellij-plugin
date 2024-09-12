@@ -19,6 +19,19 @@ fun PsiFile.offsetForLine(line: Int): IntRange? {
    }
 }
 
+fun PsiFile.offsetForTestLine(line: Int): Int? {
+   val doc = PsiDocumentManager.getInstance(project).getDocument(this) ?: return null
+   return try {
+      doc.getLineStartOffset(line)
+   } catch (e: Exception) {
+      null
+   }
+}
+
+fun PsiFile.findTestElementAtLine(line: Int): PsiElement?  {
+   return offsetForTestLine(line)?.let { findElementAt(it) }
+}
+
 /**
  * Finds the first [PsiElement] for the given offset range by iterating over
  * the values in the range until an element is found.
@@ -26,7 +39,7 @@ fun PsiFile.offsetForLine(line: Int): IntRange? {
 fun PsiElement.findElementInRange(offsets: IntRange): PsiElement? {
    return offsets.asSequence()
       .mapNotNull { findElementAt(it) }
-      .firstOrNull()
+      .elementAtOrNull(1)
 }
 
 /**
@@ -35,7 +48,14 @@ fun PsiElement.findElementInRange(offsets: IntRange): PsiElement? {
  *
  * Note: This method is 1 indexed.
  */
-fun PsiFile.elementAtLine(line: Int): PsiElement? =
-   offsetForLine(line)?.let { findElementInRange(it) }
+fun PsiFile.elementAtLine(line: Int): PsiElement?  {
+   if (line < 1) return null
+
+   return when (line) {
+      1 -> offsetForLine(line)?.let { findElementInRange(it) }
+      else -> findTestElementAtLine(line)
+   }
+}
+
 
 fun PsiElement.toPsiLocation() = PsiLocation(project, this)
