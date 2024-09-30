@@ -3,7 +3,7 @@ import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 plugins {
    id("java")
    alias(libs.plugins.kotlin.jvm)
-   id("org.jetbrains.intellij.platform") version "2.0.1"
+   id("org.jetbrains.intellij.platform") version "2.1.0"
 }
 
 repositories {
@@ -66,20 +66,20 @@ val descriptors = listOf(
       sourceFolder = "IC-233",
    ),
    PluginDescriptor(
-      since = "241.15989.150", // this version is 2024.1
+      since = "241.15989.150", // this version is 2024.1.x
       until = "242.*",
       sdkVersion = "2024.1",
       sourceFolder = "IC-241",
    ),
    PluginDescriptor(
-      since = "242.*", // this version is 2024.2
+      since = "242.*", // this version is 2024.2.x
       until = "243.*",
       sdkVersion = "2024.2",
       sourceFolder = "IC-242",
    ),
 )
 
-val productName = System.getenv("PRODUCT_NAME") ?: "IC-241"
+val productName = System.getenv("PRODUCT_NAME") ?: "IC-242"
 val jvmTargetVersion = System.getenv("JVM_TARGET") ?: "11"
 val descriptor = descriptors.first { it.sourceFolder == productName }
 
@@ -102,7 +102,7 @@ intellijPlatform {
    pluginConfiguration {
       name = "kotest-plugin-intellij"
       id = "kotest-plugin-intellij"
-      description = "Kotest plugin for IntelliJ IDEA"
+      description = "Official Kotest plugin for IntelliJ IDEA fo running tests in the IDE"
       version = project.version.toString() + "-" + descriptor.sdkVersion
       vendor {
          name = "Kotest"
@@ -136,12 +136,22 @@ dependencies {
 
    // this is needed to use the launcher in 4.2.0, in 4.2.1+ the launcher is built
    // into the engine dep which should already be on the classpath
-   implementation(libs.runtime.kotest.framework.launcher)
+   implementation(libs.runtime.kotest.framework.launcher) {
+
+   }
 
    // needed for the resource files which are loaded into java light tests
    testImplementation(libs.test.kotest.framework.api)
    testImplementation(libs.test.kotest.assertions.core)
 //   testRuntimeOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
+}
+
+configurations.all {
+   exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-core-jvm")
+   exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-core")
+   exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-jdk8")
+   exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-test")
+   exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-test-jvm")
 }
 
 sourceSets {
