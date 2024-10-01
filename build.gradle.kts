@@ -111,6 +111,12 @@ val runWithCustomSandbox by intellijPlatformTesting.runIde.registering {
    }
 }
 
+val runWithK2Mode by intellijPlatformTesting.runIde.registering {
+   task {
+      jvmArgs = listOf("-Didea.kotlin.plugin.use.k2=true")
+   }
+}
+
 intellijPlatform {
    buildSearchableOptions = false
    projectName = project.name
