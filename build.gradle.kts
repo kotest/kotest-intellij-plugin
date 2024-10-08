@@ -83,7 +83,7 @@ val descriptors = listOf(
    PluginDescriptor(
       since = "242.*", // this version is 2024.2.x
       until = "243.*",
-      sdkVersion = "2024.2",
+      sdkVersion = "2024.2.2",
       sourceFolder = "IC-242",
       useInstaller = true,
    ),
@@ -108,6 +108,12 @@ val runWithCustomSandbox by intellijPlatformTesting.runIde.registering {
    prepareSandboxTask {
       sandboxDirectory = project.layout.buildDirectory.dir(project.property("sandbox").toString())
       sandboxSuffix = ""
+   }
+}
+
+val runWithK2Mode by intellijPlatformTesting.runIde.registering {
+   task {
+      jvmArgs = listOf("-Didea.kotlin.plugin.use.k2=true")
    }
 }
 
