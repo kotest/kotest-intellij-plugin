@@ -1,5 +1,6 @@
 package io.kotest.plugin.intellij.styles
 
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.runReadAction
 import com.intellij.testFramework.LightProjectDescriptor
 import com.intellij.testFramework.fixtures.LightJavaCodeInsightFixtureTestCase
@@ -40,7 +41,7 @@ class TreeModelTest : LightJavaCodeInsightFixtureTestCase() {
          "/io/kotest/core/spec/style/specs.kt"
       )
 
-      runReadAction {
+      ApplicationManager.getApplication().runReadAction {
          val model =
             createTreeModel(myFixture.file.virtualFile, myFixture.project, myFixture.file.specs(), myFixture.module)
 

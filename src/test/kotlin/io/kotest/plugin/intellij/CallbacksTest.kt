@@ -1,5 +1,6 @@
 package io.kotest.plugin.intellij
 
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.runReadAction
 import com.intellij.testFramework.fixtures.LightJavaCodeInsightFixtureTestCase
 import io.kotest.matchers.collections.shouldHaveSize
@@ -28,7 +29,7 @@ class CallbacksTest : LightJavaCodeInsightFixtureTestCase() {
          "/io/kotest/core/spec/style/specs.kt"
       )[0]
 
-      runReadAction {
+      ApplicationManager.getApplication().runReadAction {
          val ktclass = psiFile.specs()[0]
          val callbacks = ktclass.callbacks()
 

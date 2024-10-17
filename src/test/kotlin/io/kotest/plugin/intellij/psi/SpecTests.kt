@@ -1,6 +1,6 @@
 package io.kotest.plugin.intellij.psi
 
-import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.testFramework.LightProjectDescriptor
 import com.intellij.testFramework.fixtures.LightJavaCodeInsightFixtureTestCase
@@ -28,7 +28,7 @@ class SpecTests : LightJavaCodeInsightFixtureTestCase() {
          "/io/kotest/core/spec/style/specs.kt"
       )
 
-      runReadAction {
+      ApplicationManager.getApplication().runReadAction {
          (psiFile[0].findElementAt(626) as LeafPsiElement).asKtClassOrObjectOrNull()
             ?.takeIfRunnableSpec()?.fqName?.asString() shouldBe "io.kotest.plugin.intellij.Spec1"
          (psiFile[0].findElementAt(657) as LeafPsiElement).asKtClassOrObjectOrNull()
