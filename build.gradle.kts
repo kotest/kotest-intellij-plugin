@@ -46,13 +46,6 @@ data class PluginDescriptor(
 
 val descriptors = listOf(
    PluginDescriptor(
-      since = "223.4884.69", // this version is 2022.3
-      until = "223.*",
-      sdkVersion = "2022.3",
-      sourceFolder = "IC-223",
-      useInstaller = true,
-   ),
-   PluginDescriptor(
       since = "231.8109.163", // this version is 2023.1 release
       until = "231.*",
       sdkVersion = "2023.1",
