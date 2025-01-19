@@ -1,10 +1,16 @@
-name: release
+name: master
 
 on:
-   workflow_dispatch:
+   push:
+      paths-ignore:
+         - 'doc/**'
+         - '*.md'
+      branches:
+         - master
 
 jobs:
-   release:
+   build:
+      runs-on: ubuntu-latest
 
       strategy:
          matrix:
@@ -19,9 +25,8 @@ jobs:
                -  product: "IC-243"
                   java: "17"
                   distribution: "temurin"
-         max-parallel: 1
-
-      runs-on: ubuntu-latest
+         max-parallel: 10
+         fail-fast: false
 
       steps:
          -  uses: actions/checkout@v4
@@ -33,11 +38,21 @@ jobs:
                java-version: ${{ matrix.java }}
                distribution: ${{ matrix.distribution }}
 
-         -  name: deploy to jetbrains
-            run: ./gradlew --stacktrace publishPlugin
+         -  name: Run tests
+            run: ./gradlew check
             env:
                PRODUCT_NAME: ${{ matrix.product }}
 
+         -  name: Bundle the build report
+            if: failure()
+            run: find . -type d -name 'reports' | zip -@ -r build-reports.zip
+
+         -  name: Upload the build report
+            if: failure()
+            uses: actions/upload-artifact@master
+            with:
+               name: error-report
+               path: build-reports.zip
+
 env:
    GRADLE_OPTS: -Dorg.gradle.configureondemand=true -Dorg.gradle.parallel=false -Dkotlin.incremental=false -Dorg.gradle.jvmargs="-Xmx3g -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8"
-   JETBRAINS_TOKEN: ${{ secrets.JETBRAINS_TOKEN }}
