@@ -12,6 +12,8 @@ repositories {
    mavenCentral()
    mavenLocal()
    maven("https://oss.sonatype.org/content/repositories/snapshots")
+
+   // IntelliJ Platform Gradle Plugin Repositories Extension - read more: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-repositories-extension.html
    intellijPlatform {
       defaultRepositories()
       jetbrainsRuntime()
@@ -74,7 +76,7 @@ val descriptors = listOf(
    ),
 )
 
-val productName = System.getenv("PRODUCT_NAME") ?: "IC-251"
+val productName = System.getenv("PRODUCT_NAME") ?: "IC-243"
 val jvmTargetVersion = System.getenv("JVM_TARGET") ?: "17"
 val descriptor = descriptors.first { it.sourceFolder == productName }
 
@@ -119,16 +121,27 @@ intellijPlatform {
 
 dependencies {
    testImplementation("junit:junit:4.13.2")
+
+   // IntelliJ Platform Gradle Plugin Dependencies Extension - read more: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-dependencies-extension.html
    intellijPlatform {
       // snapshots here https://www.jetbrains.com/intellij-repository/snapshots/
       intellijIdeaCommunity(descriptor.sdkVersion, useInstaller = descriptor.useInstaller)
+
       if (!descriptor.useInstaller)
          jetbrainsRuntime()
       pluginVerifier()
       zipSigner()
+
       bundledPlugin("com.intellij.java")
       bundledPlugin("org.jetbrains.kotlin")
       bundledPlugin("org.jetbrains.plugins.gradle")
+
+      // this is workaround for a bug in intellij itself
+      // see https://jetbrains-platform.slack.com/archives/C5U8BM1MK/p1734228390297349
+      if (descriptor.sdkVersion == "2024.3.1") {
+         bundledPlugin("com.intellij.llmInstaller")
+      }
+
       testFramework(TestFrameworkType.Plugin.Java)
    }
 
