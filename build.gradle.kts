@@ -5,7 +5,7 @@ import org.jetbrains.intellij.platform.gradle.models.ProductRelease
 plugins {
    id("java")
    alias(libs.plugins.kotlin.jvm)
-   id("org.jetbrains.intellij.platform") version "2.2.0"
+   id("org.jetbrains.intellij.platform") version "2.2.1"
 }
 
 repositories {
@@ -74,7 +74,7 @@ val descriptors = listOf(
    ),
 )
 
-val productName = System.getenv("PRODUCT_NAME") ?: "IC-242"
+val productName = System.getenv("PRODUCT_NAME") ?: "IC-251"
 val jvmTargetVersion = System.getenv("JVM_TARGET") ?: "17"
 val descriptor = descriptors.first { it.sourceFolder == productName }
 
