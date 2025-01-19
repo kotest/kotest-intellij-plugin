@@ -38,8 +38,7 @@ data class PluginDescriptor(
 // when releasing for an EAP, look at snapshots and see the column called build number
 //    https://www.jetbrains.com/intellij-repository/snapshots
 
-// for the sdk version we can use IC-2021.1 if the product is released
-// or IC-213-EAP-SNAPSHOT if not
+// for the sdk version we can use IC-241 if the product is released or 243-EAP-SNAPSHOT if not
 
 // for 'since' we can use an early build number without eap/snapshot eg 213.5281.15
 // and 'until' we can use a wildcard eg 213.*
@@ -66,10 +65,17 @@ val descriptors = listOf(
       sourceFolder = "IC-243",
       useInstaller = false,
    ),
+   PluginDescriptor(
+      since = "251.*", // this version is 2025.1.x
+      until = "252.*",
+      sdkVersion = "251-EAP-SNAPSHOT",
+      sourceFolder = "IC-251",
+      useInstaller = false,
+   ),
 )
 
-val productName = System.getenv("PRODUCT_NAME") ?: "IC-243"
-val jvmTargetVersion = System.getenv("JVM_TARGET") ?: "11"
+val productName = System.getenv("PRODUCT_NAME") ?: "IC-242"
+val jvmTargetVersion = System.getenv("JVM_TARGET") ?: "17"
 val descriptor = descriptors.first { it.sourceFolder == productName }
 
 val jetbrainsToken: String by project
