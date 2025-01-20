@@ -8,26 +8,26 @@ import org.jetbrains.plugins.gradle.util.GradleModuleData
  * Builds the gradle command line to execute kotest.
  */
 @Suppress("UnstableApiUsage")
-data class KotestTaskPathBuilder(
+data class GradleTaskNamesBuilder(
    private val gradleModuleData: GradleModuleData,
    private val specs: List<KtClass>,
 ) {
 
    companion object {
 
-      private const val SPEC_FQN_DELIMITED = ";"
+      private const val SPEC_FQN_DELIMITER = ";"
 
-      fun builder(gradleModuleData: GradleModuleData): KotestTaskPathBuilder =
-         KotestTaskPathBuilder(gradleModuleData, emptyList())
+      fun builder(gradleModuleData: GradleModuleData): GradleTaskNamesBuilder =
+         GradleTaskNamesBuilder(gradleModuleData, emptyList())
    }
 
-   fun withSpec(spec: KtClass): KotestTaskPathBuilder {
+   fun withSpec(spec: KtClass): GradleTaskNamesBuilder {
       return copy(specs = specs + spec)
    }
 
    fun build(): List<String> {
       val taskName = gradleModuleData.getTaskPath(Constants.GRADLE_TASK_NAME)
-      val specFQNs = specs.mapNotNull { it.fqName }.joinToString(SPEC_FQN_DELIMITED) { it.asString() }
+      val specFQNs = specs.mapNotNull { it.fqName }.joinToString(SPEC_FQN_DELIMITER) { it.asString() }
       return listOf(
          taskName,
          "--specs '$specFQNs'"

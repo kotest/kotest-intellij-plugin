@@ -23,5 +23,5 @@ data class GradleTestRunNameBuilder(
       return copy(test = test)
    }
 
-   fun build(): String = "Kotest ${spec?.name}:${test?.readableTestPath()}"
+   fun build(): String = "[kotest] ${spec?.name} ${test?.readableTestPath()}"
 }

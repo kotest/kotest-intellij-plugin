@@ -67,8 +67,7 @@ class GradleTestRunConfigurationProducer : GradleRunConfigurationProducer() {
 
       val project = context.project ?: return false
       val module = context.module ?: return false
-
-      println("setupConfigurationFromContext $configuration $context $sourceElement")
+      val gradleModuleData = CachedModuleDataFinder.getGradleModuleData(module) ?: return false
 
       // we must have the element we clicked on as we are running from the gutter
       val element = sourceElement.get()
@@ -84,9 +83,6 @@ class GradleTestRunConfigurationProducer : GradleRunConfigurationProducer() {
       val externalProjectPath = GradleUtils.resolveProjectPath(module) ?: return false
       val location = context.location ?: return false
 
-      val gradleModuleData = CachedModuleDataFinder.getGradleModuleData(module) ?: return false
-      val path = gradleModuleData.getTaskPath(Constants.GRADLE_TASK_NAME)
-
       configuration.name = GradleTestRunNameBuilder.builder().withSpec(spec).withTest(test).build()
       configuration.isDebugServerProcess = false
 
@@ -96,7 +92,8 @@ class GradleTestRunConfigurationProducer : GradleRunConfigurationProducer() {
       // note: configuration.settings.externalSystemId is set for us
       configuration.settings.externalProjectPath = externalProjectPath
       configuration.settings.scriptParameters = ""
-      configuration.settings.taskNames = KotestTaskPathBuilder.builder(gradleModuleData).withSpec(spec).build()
+      configuration.settings.taskNames = GradleTaskNamesBuilder.builder(gradleModuleData).withSpec(spec).build()
+      println(configuration.settings.taskNames.toString())
 
       JavaRunConfigurationExtensionManager.instance.extendCreatedConfiguration(configuration, location)
       return true
@@ -118,8 +115,6 @@ class GradleTestRunConfigurationProducer : GradleRunConfigurationProducer() {
       // if kotest is not the task this configuration is running, then this isn't a configuration we can re-use
       // eg, we might be passed another gradle run configuration that was running build or clean etc
       if (configuration.settings.taskNames.firstOrNull() != Constants.GRADLE_TASK_NAME) return false
-
-      println("isConfigurationFromContext $configuration $context")
 
       val element = context.psiLocation
       if (element != null) {
