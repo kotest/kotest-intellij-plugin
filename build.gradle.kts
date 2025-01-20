@@ -76,7 +76,7 @@ val descriptors = listOf(
    ),
 )
 
-val productName = System.getenv("PRODUCT_NAME") ?: "IC-243"
+val productName = System.getenv("PRODUCT_NAME") ?: "IC-251"
 val jvmTargetVersion = System.getenv("JVM_TARGET") ?: "17"
 val descriptor = descriptors.first { it.sourceFolder == productName }
 
@@ -120,6 +120,7 @@ intellijPlatform {
 }
 
 dependencies {
+   // https://youtrack.jetbrains.com/issue/IJPL-159134/JUnit5-Test-Framework-refers-to-JUnit4-java.lang.NoClassDefFoundError-junit-framework-TestCase
    testImplementation("junit:junit:4.13.2")
 
    // IntelliJ Platform Gradle Plugin Dependencies Extension - read more: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-dependencies-extension.html
@@ -127,8 +128,11 @@ dependencies {
       // snapshots here https://www.jetbrains.com/intellij-repository/snapshots/
       intellijIdeaCommunity(descriptor.sdkVersion, useInstaller = descriptor.useInstaller)
 
-      if (!descriptor.useInstaller)
+      if (!descriptor.useInstaller) {
          jetbrainsRuntime()
+//         testPlatformDependency(Coordinates("com.jetbrains.intelli.java", "java-test-framework"))
+      }
+
       pluginVerifier()
       zipSigner()
 
@@ -180,8 +184,10 @@ tasks {
    test {
       isScanForTestClasses = false
       // Only run tests from classes that end with "Test"
-      include("**/*Test.class")
-      include("**/*Tests.class")
+      if (descriptor.useInstaller) {
+         include("**/*Test.class")
+         include("**/*Tests.class")
+      }
    }
 }
 
