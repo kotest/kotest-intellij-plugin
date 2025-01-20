@@ -4,6 +4,8 @@ import com.intellij.execution.JavaRunConfigurationExtensionManager
 import com.intellij.execution.RunManager
 import com.intellij.execution.actions.ConfigurationContext
 import com.intellij.execution.actions.ConfigurationFromContext
+import com.intellij.execution.actions.LazyRunConfigurationProducer
+import com.intellij.execution.configurations.ConfigurationFactory
 import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiElement
 import io.kotest.plugin.intellij.Constants
@@ -11,8 +13,8 @@ import io.kotest.plugin.intellij.gradle.GradleUtils
 import io.kotest.plugin.intellij.psi.enclosingKtClass
 import io.kotest.plugin.intellij.styles.SpecStyle
 import org.jetbrains.kotlin.psi.KtClass
-import org.jetbrains.plugins.gradle.execution.GradleRunConfigurationProducer
 import org.jetbrains.plugins.gradle.execution.build.CachedModuleDataFinder
+import org.jetbrains.plugins.gradle.service.execution.GradleExternalTaskConfigurationType
 import org.jetbrains.plugins.gradle.service.execution.GradleRunConfiguration
 
 /**
@@ -20,8 +22,15 @@ import org.jetbrains.plugins.gradle.service.execution.GradleRunConfiguration
  *
  * This uses a [GradleRunConfiguration] which is an intellij provided ExternalSystemRunConfiguration
  * that runs gradle tasks.
+ *
+ * Intellij 242+ provides a GradleRunConfigurationProducer but that isn't part of 241, so until that is
+ * no longer supported we will use this custom producer.
  */
-class GradleTestRunConfigurationProducer : GradleRunConfigurationProducer() {
+class GradleTestRunConfigurationProducer : LazyRunConfigurationProducer<GradleRunConfiguration>() {
+
+   override fun getConfigurationFactory(): ConfigurationFactory {
+      return GradleExternalTaskConfigurationType.getInstance().factory
+   }
 
    /**
     * When two configurations are created from the same context by two different producers, checks if the
