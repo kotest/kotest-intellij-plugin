@@ -182,7 +182,9 @@ kotlin {
 
 tasks {
    test {
-      this.dryRun = !descriptor.useInstaller
+      if (descriptor.useInstaller) {
+         useTestNG() // no test ng tests so this will disable junit
+      }
       isScanForTestClasses = false
       // Only run tests from classes that end with "Test"
       include("**/*Test.class")
