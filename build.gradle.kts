@@ -182,12 +182,11 @@ kotlin {
 
 tasks {
    test {
+      this.dryRun = !descriptor.useInstaller
       isScanForTestClasses = false
       // Only run tests from classes that end with "Test"
-      if (descriptor.useInstaller) {
-         include("**/*Test.class")
-         include("**/*Tests.class")
-      }
+      include("**/*Test.class")
+      include("**/*Tests.class")
    }
 }
 
