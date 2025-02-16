@@ -65,7 +65,7 @@ val descriptors = listOf(
    ),
    PluginDescriptor(
       since = "243.*", // this version is 2024.3.x
-      until = "252.*",
+      until = "244.*",
       sdkVersion = "2024.3.1",
       sourceFolder = "IC-243",
       useInstaller = true,
@@ -79,7 +79,7 @@ val descriptors = listOf(
    ),
 )
 
-val productName = System.getenv("PRODUCT_NAME") ?: "IC-243"
+val productName = System.getenv("PRODUCT_NAME") ?: "IC-251"
 val jvmTargetVersion = System.getenv("JVM_TARGET") ?: "17"
 val descriptor = descriptors.first { it.sourceFolder == productName }
 
