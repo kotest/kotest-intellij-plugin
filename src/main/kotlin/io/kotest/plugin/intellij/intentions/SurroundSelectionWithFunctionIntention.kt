@@ -1,8 +1,8 @@
 package io.kotest.plugin.intellij.intentions
 
 import com.intellij.codeInsight.intention.PsiElementBaseIntentionAction
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.Editor
+import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiDocumentManager
@@ -18,7 +18,9 @@ internal var testMode = false
 abstract class SurroundSelectionWithFunctionIntention : PsiElementBaseIntentionAction() {
 
    override fun isAvailable(project: Project, editor: Editor?, element: PsiElement): Boolean {
-      if (ApplicationManager.getApplication().isDispatchThread && !testMode) {
+      // we need indices available in order to scan this file because in order to determine if we have
+      // a spec we need to check if any of the parent classes (which are different files) are spec types
+      if (DumbService.isDumb(project)) {
          return false
       }
       return try {
