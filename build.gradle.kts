@@ -27,7 +27,8 @@ data class PluginDescriptor(
    // https://github.com/JetBrains/gradle-intellij-plugin#intellij-platform-properties
    val sdkVersion: String, // the version string passed to the intellij sdk gradle plugin
    val sourceFolder: String, // used as the source root for specifics of this build
-   val useInstaller: Boolean, // required to be false for EAP builds
+   val useInstaller: Boolean,  // required to be false for EAP builds
+   val jdkTarget: JavaVersion,
 )
 
 // https://jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html
@@ -55,6 +56,7 @@ val descriptors = listOf(
       sdkVersion = "2024.1",
       sourceFolder = "IC-241",
       useInstaller = true,
+      jdkTarget = JavaVersion.VERSION_17,
    ),
    PluginDescriptor(
       since = "242.*", // this version is 2024.2.x
@@ -62,6 +64,7 @@ val descriptors = listOf(
       sdkVersion = "2024.2.2",
       sourceFolder = "IC-242",
       useInstaller = true,
+      jdkTarget = JavaVersion.VERSION_17,
    ),
    PluginDescriptor(
       since = "243.*", // this version is 2024.3.x
@@ -69,6 +72,7 @@ val descriptors = listOf(
       sdkVersion = "2024.3.1",
       sourceFolder = "IC-243",
       useInstaller = true,
+      jdkTarget = JavaVersion.VERSION_17,
    ),
    PluginDescriptor(
       since = "251.*", // this version is 2025.1.x
@@ -76,11 +80,11 @@ val descriptors = listOf(
       sdkVersion = "251-EAP-SNAPSHOT",
       sourceFolder = "IC-251",
       useInstaller = false,
+      jdkTarget = JavaVersion.VERSION_21,
    ),
 )
 
 val productName = System.getenv("PRODUCT_NAME") ?: "IC-251"
-val jvmTargetVersion = System.getenv("JVM_TARGET") ?: "17"
 val descriptor = descriptors.first { it.sourceFolder == productName }
 
 val jetbrainsToken: String by project
@@ -176,9 +180,14 @@ sourceSets {
    }
 }
 
+java {
+   sourceCompatibility = descriptor.jdkTarget
+   targetCompatibility = descriptor.jdkTarget
+}
+
 kotlin {
    compilerOptions {
-      jvmToolchain(JavaLanguageVersion.of(jvmTargetVersion).asInt())
+      jvmToolchain(JavaLanguageVersion.of(descriptor.jdkTarget.toString()).asInt())
    }
 }
 
