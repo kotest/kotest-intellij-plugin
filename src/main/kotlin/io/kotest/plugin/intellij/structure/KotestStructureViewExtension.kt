@@ -11,6 +11,7 @@ import com.intellij.psi.NavigatablePsiElement
 import com.intellij.psi.PsiElement
 import io.kotest.plugin.intellij.Test
 import io.kotest.plugin.intellij.TestElement
+import io.kotest.plugin.intellij.intentions.testMode
 import io.kotest.plugin.intellij.psi.specStyle
 import org.jetbrains.kotlin.psi.KtClassOrObject
 
@@ -27,7 +28,7 @@ class KotestStructureViewExtension : StructureViewExtension {
    override fun getChildren(parent: PsiElement): Array<StructureViewTreeElement> {
       // we need indices available in order to scan this file because in order to determine if we have
       // a spec we need to check if any of the parent classes (which are different files) are spec types
-      if (DumbService.isDumb(parent.project)) {
+      if (DumbService.isDumb(parent.project) && !testMode) {
          return emptyArray()
       }
       val ktClassOrObject = parent as? KtClassOrObject ?: return emptyArray()
