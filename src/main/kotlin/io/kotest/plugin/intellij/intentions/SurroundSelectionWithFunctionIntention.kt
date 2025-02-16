@@ -1,48 +1,39 @@
 package io.kotest.plugin.intellij.intentions
 
-import com.intellij.codeInsight.intention.PsiElementBaseIntentionAction
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.project.DumbService
+import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
-import io.kotest.plugin.intellij.psi.isContainedInSpec
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtPsiFactory
 import org.jetbrains.kotlin.resolve.ImportPath
 
-internal var testMode = false
-
-abstract class SurroundSelectionWithFunctionIntention : PsiElementBaseIntentionAction() {
+abstract class SurroundSelectionWithFunctionIntention : TestSourceOnlyIntentionAction(), DumbAware {
 
    override fun isAvailable(project: Project, editor: Editor?, element: PsiElement): Boolean {
-      // we need indices available in order to scan this file because in order to determine if we have
-      // a spec we need to check if any of the parent classes (which are different files) are spec types
-      if (DumbService.isDumb(project) && !testMode) {
-         return false
-      }
-      return try {
-         editor?.selectionModel?.hasSelection() == true && element.isContainedInSpec()
-      } catch (e: Exception) {
-         e.printStackTrace()
-         false
-      }
+      return isTestSource(element)
    }
 
    abstract val importFQN: FqName
    abstract val function: String
 
    override fun invoke(project: Project, editor: Editor?, element: PsiElement) {
+      if (editor == null) return
+      addPsi(project, editor, element)
+   }
 
+   private fun addPsi(project: Project, editor: Editor, element: PsiElement) {
       val docManager = PsiDocumentManager.getInstance(project)
       val ktfactory = KtPsiFactory(project)
 
       try {
 
-         val selection = editor?.selectionModel
-         if (selection?.hasSelection() == true) {
+         val selection = editor.selectionModel
+         if (selection.hasSelection() == true) {
 
             val file = element.containingFile
             if (file is KtFile) {

@@ -7,6 +7,8 @@ import com.intellij.ide.util.treeView.smartTree.TreeElement
 import com.intellij.navigation.ItemPresentation
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.DumbService
+import com.intellij.openapi.roots.TestSourcesFilter
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.NavigatablePsiElement
 import com.intellij.psi.PsiElement
 import io.kotest.plugin.intellij.Test
@@ -31,6 +33,8 @@ class KotestStructureViewExtension : StructureViewExtension {
       if (DumbService.isDumb(parent.project) && !testMode) {
          return emptyArray()
       }
+      val virtualFile: VirtualFile = parent.containingFile?.virtualFile ?: return emptyArray()
+      if (!TestSourcesFilter.isTestSources(virtualFile, parent.project) && !testMode) return emptyArray()
       val ktClassOrObject = parent as? KtClassOrObject ?: return emptyArray()
       val spec = ktClassOrObject.specStyle() ?: return emptyArray()
       val tests = spec.tests(parent, false)
