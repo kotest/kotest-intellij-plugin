@@ -77,9 +77,9 @@ val descriptors = listOf(
    PluginDescriptor(
       since = "251.*", // this version is 2025.1.x
       until = "252.*",
-      sdkVersion = "251-EAP-SNAPSHOT",
+      sdkVersion = "2025.1.0",
       sourceFolder = "IC-251",
-      useInstaller = false,
+      useInstaller = true,
       jdkTarget = JavaVersion.VERSION_21,
    ),
 )
@@ -181,13 +181,13 @@ sourceSets {
 }
 
 java {
-   sourceCompatibility = descriptor.jdkTarget
-   targetCompatibility = descriptor.jdkTarget
+   sourceCompatibility = JavaVersion.VERSION_21
+   targetCompatibility = JavaVersion.VERSION_21
 }
 
 kotlin {
    compilerOptions {
-      jvmToolchain(JavaLanguageVersion.of(descriptor.jdkTarget.toString()).asInt())
+      jvmToolchain(JavaLanguageVersion.of(21).asInt())
    }
 }
 
