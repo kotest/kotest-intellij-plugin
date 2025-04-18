@@ -28,6 +28,7 @@ data class PluginDescriptor(
    val sdkVersion: String, // the version string passed to the intellij sdk gradle plugin
    val sourceFolder: String, // used as the source root for specifics of this build
    val useInstaller: Boolean, // required to be false for EAP builds
+   val jdkTarget: JavaVersion,
 )
 
 // https://jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html
@@ -55,26 +56,29 @@ val descriptors = listOf(
       sdkVersion = "2024.2.2",
       sourceFolder = "IC-242",
       useInstaller = true,
+      jdkTarget = JavaVersion.VERSION_17,
    ),
    PluginDescriptor(
       since = "243.*", // this version is 2024.3.x
-      until = "252.*",
+      until = "251.*",
       sdkVersion = "2024.3.1",
       sourceFolder = "IC-243",
       useInstaller = true,
+      jdkTarget = JavaVersion.VERSION_17,
    ),
    PluginDescriptor(
       since = "251.*", // this version is 2025.1.x
       until = "252.*",
       sdkVersion = "2025.1",
       sourceFolder = "IC-251",
-      useInstaller = false,
+      useInstaller = true,
+      jdkTarget = JavaVersion.VERSION_21,
    ),
 )
 
 val productName = System.getenv("PRODUCT_NAME") ?: "IC-251"
-val jvmTargetVersion = System.getenv("JVM_TARGET") ?: "17"
-val descriptor = descriptors.first { it.sourceFolder == productName }
+val descriptor: PluginDescriptor = descriptors.first { it.sourceFolder == productName }
+val jvmTargetVersion = System.getenv("JVM_TARGET") ?: descriptor.jdkTarget
 
 val jetbrainsToken: String by project
 
