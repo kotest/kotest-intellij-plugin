@@ -50,13 +50,6 @@ data class PluginDescriptor(
 
 val descriptors = listOf(
    PluginDescriptor(
-      since = "241.15989.150", // this version is 2024.1.x
-      until = "242.*",
-      sdkVersion = "2024.1",
-      sourceFolder = "IC-241",
-      useInstaller = true,
-   ),
-   PluginDescriptor(
       since = "242.*", // this version is 2024.2.x
       until = "243.*",
       sdkVersion = "2024.2.2",
@@ -73,13 +66,13 @@ val descriptors = listOf(
    PluginDescriptor(
       since = "251.*", // this version is 2025.1.x
       until = "252.*",
-      sdkVersion = "251-EAP-SNAPSHOT",
+      sdkVersion = "2025.1",
       sourceFolder = "IC-251",
       useInstaller = false,
    ),
 )
 
-val productName = System.getenv("PRODUCT_NAME") ?: "IC-243"
+val productName = System.getenv("PRODUCT_NAME") ?: "IC-251"
 val jvmTargetVersion = System.getenv("JVM_TARGET") ?: "17"
 val descriptor = descriptors.first { it.sourceFolder == productName }
 
