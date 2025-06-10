@@ -13,7 +13,7 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.source.PostprocessReformattingAspect
 import com.intellij.refactoring.util.classMembers.MemberInfo
 import com.intellij.testIntegration.createTest.CreateTestDialog
-import com.intellij.testIntegration.createTest.JavaTestGenerator
+import com.intellij.testIntegration.createTest.TestGenerator
 import com.intellij.util.concurrency.annotations.RequiresReadLock
 import io.kotest.plugin.intellij.Constants
 import io.kotest.plugin.intellij.KotestTestFramework
@@ -24,6 +24,8 @@ import org.jetbrains.kotlin.analysis.api.permissions.KaAllowAnalysisOnEdt
 import org.jetbrains.kotlin.analysis.api.permissions.allowAnalysisFromWriteAction
 import org.jetbrains.kotlin.analysis.api.permissions.allowAnalysisOnEdt
 import org.jetbrains.kotlin.idea.KotlinLanguage
+import org.jetbrains.kotlin.idea.base.plugin.KotlinPluginModeProvider
+import org.jetbrains.kotlin.idea.k2.codeinsight.generate.KotlinTestGenerator
 import org.jetbrains.kotlin.idea.refactoring.memberInfo.toKotlinMemberInfo
 import org.jetbrains.kotlin.name.FqName
 import java.util.Properties
@@ -31,7 +33,10 @@ import java.util.Properties
 /**
  * Used to create "Template" test class files.
  */
-class KotestTestGenerator : JavaTestGenerator() {
+class KotestTestGenerator : TestGenerator {
+
+   private val kotlinTestGenerator = KotlinTestGenerator()
+   private val javaTestGenerator = KotlinTestGenerator()
 
    override fun toString(): String = KotlinLanguage.INSTANCE.displayName
 
@@ -40,18 +45,25 @@ class KotestTestGenerator : JavaTestGenerator() {
       // the framework name and delegate to the JavaTestGenerator one. But this only works while JavaTestGenerator
       // is public, and has a zero arg constructor, so I would like to find a better long term solution:
       // https://intellij-support.jetbrains.com/hc/en-us/community/posts/15040678418450-How-to-choose-when-to-apply-TestGenerator
-      if (d.selectedTestFrameworkDescriptor.name != Constants.FRAMEWORK_NAME)
-         return super.generateTest(project, d)
-      return PostprocessReformattingAspect.getInstance(project).postponeFormattingInside(Computable {
-         ApplicationManager.getApplication().runWriteAction(Computable<PsiElement?> {
-            val file = generateTestFile(project, d)
-            if (file != null) {
-               // without this the file is created but the caret stays in the original file
-               CodeInsightUtil.positionCursor(project, file, file)
-            }
-            file
+      return if (d.selectedTestFrameworkDescriptor.name != Constants.FRAMEWORK_NAME) {
+         val testGenerator = if (KotlinPluginModeProvider.isK2Mode()) {
+            kotlinTestGenerator
+         } else {
+            javaTestGenerator
+         }
+         testGenerator.generateTest(project, d)
+      } else {
+         PostprocessReformattingAspect.getInstance(project).postponeFormattingInside(Computable {
+            ApplicationManager.getApplication().runWriteAction(Computable<PsiElement?> {
+               val file = generateTestFile(project, d)
+               if (file != null) {
+                  // without this the file is created but the caret stays in the original file
+                  CodeInsightUtil.positionCursor(project, file, file)
+               }
+               file
+            })
          })
-      })
+      }
    }
 
    private fun styleForSuperClass(fqn: FqName): SpecStyle =
