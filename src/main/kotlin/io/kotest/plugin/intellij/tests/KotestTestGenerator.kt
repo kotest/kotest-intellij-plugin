@@ -13,6 +13,7 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.source.PostprocessReformattingAspect
 import com.intellij.refactoring.util.classMembers.MemberInfo
 import com.intellij.testIntegration.createTest.CreateTestDialog
+import com.intellij.testIntegration.createTest.JavaTestGenerator
 import com.intellij.testIntegration.createTest.TestGenerator
 import com.intellij.util.concurrency.annotations.RequiresReadLock
 import io.kotest.plugin.intellij.Constants
@@ -36,7 +37,7 @@ import java.util.Properties
 class KotestTestGenerator : TestGenerator {
 
    private val kotlinTestGenerator = KotlinTestGenerator()
-   private val javaTestGenerator = KotlinTestGenerator()
+   private val javaTestGenerator = JavaTestGenerator()
 
    override fun toString(): String = KotlinLanguage.INSTANCE.displayName
 
