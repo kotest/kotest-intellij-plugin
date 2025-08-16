@@ -1,5 +1,6 @@
 package io.kotest.plugin.intellij.gradle
 
+import com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil
 import com.intellij.openapi.module.Module
 import io.kotest.plugin.intellij.run.GradleTaskNamesBuilder
 import org.jetbrains.plugins.gradle.execution.GradleRunnerUtil
@@ -15,14 +16,22 @@ object GradleUtils {
     */
    fun hasGradlePlugin(module: Module?): Boolean {
       if (module == null) return false
+//      GradleSettings.getInstance(module.project).linkedProjectsSettings.forEach { settings ->
+//         val gm = ExternalSystemApiUtil.getManager() as GradleManager
+//         gm.
+//      }
       // if we have any kotest gradle task in the project, we assume the plugin is applied
       return kotestTasks(module).isNotEmpty()
    }
 
    @Suppress("UnstableApiUsage")
    fun listTasks(module: Module): List<GradleTaskData> {
-      val externalProjectPath = resolveProjectPath(module) ?: return emptyList()
-      return GradleTasksIndices.getInstance(module.project).findTasks(externalProjectPath)
+      val modulePath = resolveModulePath(module) ?: return emptyList()
+      val moduleData = moduleData(module) ?: return emptyList()
+      // this will return tasks like :kotest and :mymodule:kotest, so we need to filter them
+      val tasks = GradleTasksIndices.getInstance(module.project).findTasks(modulePath)
+      // filter down the tasks to the module only
+      return tasks.filter { it.getFqnTaskName().startsWith(moduleData.moduleData.id + ":") }
    }
 
    /**
@@ -30,11 +39,13 @@ object GradleUtils {
     */
    fun hasKotestTask(taskNames: List<String>): Boolean {
       // tasks from the gradle plugin are like kotest, jsKotest, jvmKotest, wasmJsKotest, etc.
-      // so returns true if any task in the project ends with kotest
       // todo really need some better way of identifying kotest tasks
       return taskNames.any { isKotestTaskName(it) }
    }
 
+   /**
+    * Returns a list of Kotest tasks for the given module.
+    */
    @Suppress("UnstableApiUsage")
    fun kotestTasks(module: Module): List<GradleTaskData> {
       return listTasks(module)
@@ -44,12 +55,14 @@ object GradleUtils {
 
    fun isKotestTaskName(taskName: String): Boolean {
       return taskName == "kotest" // jvm only task name
-         || taskName.endsWith("Kotest") // thinks like linuxX84Kotest
-         || taskName.endsWith("kotestDebugUnitTest") // android
-         || taskName.endsWith("kotestReleaseUnitTest") // android
+         || taskName == "jvmKotest" // multiplatform jvm task name
+         || taskName == "jsKotest" // multiplatform js task name
+         || taskName == "wasmJsKotest" // multiplatform wasm js task name
+         || taskName == "wasmWasiKotest" // multiplatform wasm wasi task name
+         || taskName.matches("kotest[a-z]+UnitTest".toRegex()) // matches kotestReleaseUnitTest, kotestDebugUnitTest, etc.
    }
 
-   fun getDescriptorArg(taskNames: List<String>): String? {
+   fun getIncludeArg(taskNames: List<String>): String? {
       val arg = taskNames.firstOrNull { it.startsWith(GradleTaskNamesBuilder.ARG_INCLUDE) } ?: return null
       return arg.substringAfter(GradleTaskNamesBuilder.ARG_INCLUDE).trim().removeSurrounding("'")
    }
@@ -62,5 +75,14 @@ object GradleUtils {
          return gradleModuleData.directoryToRunTask
       }
       return GradleRunnerUtil.resolveProjectPath(module)
+   }
+
+   fun resolveModulePath(module: Module): String? {
+      return ExternalSystemApiUtil.getExternalProjectPath(module)
+   }
+
+   @Suppress("UnstableApiUsage")
+   fun moduleData(module: Module): GradleModuleData? {
+      return CachedModuleDataFinder.getGradleModuleData(module)
    }
 }

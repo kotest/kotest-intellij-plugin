@@ -2,25 +2,6 @@ import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 import org.jetbrains.intellij.platform.gradle.models.ProductRelease
 
-plugins {
-   id("java")
-   alias(libs.plugins.kotlin.jvm)
-   id("org.jetbrains.intellij.platform") version "2.6.0"
-}
-
-repositories {
-   mavenCentral()
-   mavenLocal()
-   maven("https://oss.sonatype.org/content/repositories/snapshots")
-
-   // IntelliJ Platform Gradle Plugin Repositories Extension - read more: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-repositories-extension.html
-   intellijPlatform {
-      defaultRepositories()
-      jetbrainsRuntime()
-   }
-}
-
-
 data class PluginDescriptor(
    val since: String, // earliest version string this is compatible with
    val until: String, // latest version string this is compatible with, can be wildcard like 202.*
@@ -58,11 +39,39 @@ val descriptors = listOf(
       useInstaller = true,
       jdkTarget = JavaVersion.VERSION_21,
    ),
+   PluginDescriptor(
+      since = "252.*", // this version is 2025.1.x
+      until = "253.*",
+      sdkVersion = "2025.2",
+      sourceFolder = "IC-252",
+      useInstaller = true,
+      jdkTarget = JavaVersion.VERSION_21,
+   ),
 )
 
 val productName = System.getenv("PRODUCT_NAME") ?: "IC-252"
 val descriptor: PluginDescriptor = descriptors.first { it.sourceFolder == productName }
 val jvmTargetVersion: String = System.getenv("JVM_TARGET") ?: descriptor.jdkTarget.majorVersion
+
+plugins {
+   val kotlinVersion = "2.2.0"
+   id("java")
+   id("org.jetbrains.kotlin.jvm").version(kotlinVersion)
+   id("org.jetbrains.intellij.platform") version "2.7.0"
+}
+
+repositories {
+   mavenCentral()
+   mavenLocal()
+   maven("https://oss.sonatype.org/content/repositories/snapshots")
+
+   // IntelliJ Platform Gradle Plugin Repositories Extension - read more: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-repositories-extension.html
+   intellijPlatform {
+      defaultRepositories()
+      jetbrainsRuntime()
+   }
+}
+
 
 val jetbrainsToken: String by project
 
@@ -110,7 +119,9 @@ dependencies {
    // IntelliJ Platform Gradle Plugin Dependencies Extension - read more: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-dependencies-extension.html
    intellijPlatform {
       // snapshots here https://www.jetbrains.com/intellij-repository/snapshots/
-      intellijIdeaCommunity(descriptor.sdkVersion, useInstaller = descriptor.useInstaller)
+      intellijIdeaCommunity(descriptor.sdkVersion) {
+         useInstaller = descriptor.useInstaller
+      }
 
       if (!descriptor.useInstaller) {
          jetbrainsRuntime()

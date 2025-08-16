@@ -15,6 +15,7 @@ import com.intellij.openapi.externalSystem.service.internal.ExternalSystemExecut
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import io.kotest.plugin.intellij.Constants
+import io.kotest.plugin.intellij.gradle.GradleUtils
 import jetbrains.buildServer.messages.serviceMessages.ServiceMessagesParser
 import org.jetbrains.plugins.gradle.util.GradleConstants
 
@@ -23,9 +24,6 @@ import org.jetbrains.plugins.gradle.util.GradleConstants
  * for displaying Kotest test results when executing Gradle tasks that run Kotest tests.
  */
 class KotestExecutionConsoleManager : ExternalSystemExecutionConsoleManager<SMTRunnerConsoleView, ProcessHandler> {
-
-   // needs to be defined here so we don't created a new one in the onOutput method every time
-   private var callback: KotestServiceMessageCallback? = null
 
    private val parser = ServiceMessagesParser()
 
@@ -56,7 +54,8 @@ class KotestExecutionConsoleManager : ExternalSystemExecutionConsoleManager<SMTR
       val consoleProperties = KotestSMTRunnerConsoleProperties(settings.configuration, env.executor)
 
       val splitterPropertyName = SMTestRunnerConnectionUtil.getSplitterPropertyName(Constants.FRAMEWORK_NAME)
-      val consoleView = KotestSMTRunnerConsoleView(consoleProperties, splitterPropertyName)
+      val publisher = project.messageBus.syncPublisher(SMTRunnerEventsListener.TEST_STATUS)
+      val consoleView = KotestSMTRunnerConsoleView(consoleProperties, splitterPropertyName, publisher, project)
 
       // sets up the process listener on the console view, using the properties that were passed to the console
       SMTestRunnerConnectionUtil.initConsoleView(consoleView, Constants.FRAMEWORK_NAME)
@@ -64,19 +63,16 @@ class KotestExecutionConsoleManager : ExternalSystemExecutionConsoleManager<SMTR
       consoleView.resultsViewer.testsRootNode.executionId = env.executionId
       consoleView.resultsViewer.testsRootNode.setSuiteStarted()
 
-      val publisher = project.messageBus.syncPublisher(SMTRunnerEventsListener.TEST_STATUS)
-      callback = KotestServiceMessageCallback(consoleView, publisher)
-
       consoleView.resultsViewer.onSuiteStarted(consoleView.resultsViewer.testsRootNode)
       publisher.onSuiteStarted(consoleView.resultsViewer.testsRootNode)
 
       processHandler.addProcessListener(object : ProcessAdapter() {
          override fun processTerminated(event: ProcessEvent) {
 
-            callback?.addNoTestsPlaceholder()
+            consoleView.callback.addNoTestsPlaceholder()
 
-            if (event.exitCode == 1) {
-               consoleView.resultsViewer.testsRootNode.setTestFailed("Exit code 1", null, true)
+            if (event.exitCode != 0) {
+               consoleView.resultsViewer.testsRootNode.setTestFailed("Exit code ${event.exitCode}", null, true)
             } else {
                consoleView.resultsViewer.testsRootNode.setFinished()
             }
@@ -94,8 +90,8 @@ class KotestExecutionConsoleManager : ExternalSystemExecutionConsoleManager<SMTR
 
    /**
     * Returns true if this implementation of [ExternalSystemExecutionConsoleManager] should be used to
-    * handle the output of the given [task]. We determine true if the task is a Gradle task
-    * that contains a Kotest task name.
+    * handle the output of the given [task]. We determine true if we are running tests and have the
+    * kotest gradle plugin applied to the project
     *
     * This method is invoked for all extensions for each task that is executed by an external system.
     * It is up to this extension to determine if it is applicable for the given task.
@@ -103,9 +99,8 @@ class KotestExecutionConsoleManager : ExternalSystemExecutionConsoleManager<SMTR
    override fun isApplicableFor(task: ExternalSystemTask): Boolean {
       if (task is ExternalSystemExecuteTaskTask) {
          if (task.externalSystemId.id == GradleConstants.SYSTEM_ID.id) {
-            return task.tasksToExecute.any {
-               it.lowercase().endsWith("kotest")
-            }
+            println("Checking is applicable, tasks to execute: ${task.tasksToExecute} state=${task.state} data=${task.userDataString} externalPath=${task.externalProjectPath}")
+            return GradleUtils.hasKotestTask(task.tasksToExecute)
          }
       }
       return false
@@ -117,6 +112,8 @@ class KotestExecutionConsoleManager : ExternalSystemExecutionConsoleManager<SMTR
       text: String,
       processOutputType: Key<*>, // is stdout or stderr
    ) {
-      parser.parse(text, callback ?: error("callback must be set"))
+      when (executionConsole) {
+         is KotestSMTRunnerConsoleView -> parser.parse(text, executionConsole.callback)
+      }
    }
 }
