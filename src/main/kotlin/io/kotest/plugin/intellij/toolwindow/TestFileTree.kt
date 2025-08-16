@@ -28,7 +28,7 @@ class TestFileTree(
          val node = path.lastPathComponent as? DefaultMutableTreeNode
          val descriptor = node?.userObject as? PresentableNodeDescriptor<*>
          descriptor?.presentation?.presentableText ?: node?.userObject?.toString() ?: ""
-      }, true)
+      }, false)
       // listens to changes in the selections
       addTreeSelectionListener(testExplorerTreeSelectionListener)
       kotestTestExplorerService.registerModelListener(this)
