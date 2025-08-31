@@ -9,6 +9,12 @@ import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.TreeModel
 import javax.swing.tree.TreeSelectionModel
 
+private data class FileTreeState(
+   val allKeys: Set<String>,
+   val expandedKeys: Set<String>,
+   var initiallyExpanded: Boolean,
+)
+
 class TestFileTree(
    project: Project,
 ) : com.intellij.ui.treeStructure.Tree(),
@@ -18,10 +24,8 @@ class TestFileTree(
    private val kotestTestExplorerService: KotestTestExplorerService =
       project.getService(KotestTestExplorerService::class.java)
    private var initialized = false
-   private val filesInitiallyExpanded = mutableSetOf<String>()
    private var lastFileKey: String? = null
-   private val savedExpandedByFile = mutableMapOf<String, Set<String>>()
-   private val savedAllKeysByFile = mutableMapOf<String, Set<String>>()
+   private val stateByFileKey = mutableMapOf<String, FileTreeState>()
 
    init {
       selectionModel.selectionMode = TreeSelectionModel.SINGLE_TREE_SELECTION
@@ -49,24 +53,27 @@ class TestFileTree(
 
       // If switching away from a file, save its state first
       if (lastFileKey != null && lastFileKey != newFileKey) {
-         savedExpandedByFile[lastFileKey!!] = collectExpandedPathKeys()
-         savedAllKeysByFile[lastFileKey!!] = collectAllPathKeys()
+         val prevAll = collectAllPathKeys()
+         val prevExpanded = collectExpandedPathKeys()
+         val prevInit = stateByFileKey[lastFileKey!!]?.initiallyExpanded ?: false
+         stateByFileKey[lastFileKey!!] = FileTreeState(prevAll, prevExpanded, prevInit)
       }
 
-      val firstOpenForFile = newFileKey != null && !filesInitiallyExpanded.contains(newFileKey)
       val sameFile = newFileKey == lastFileKey
+      val prevStateForNew = if (newFileKey != null) stateByFileKey[newFileKey] else null
+      val firstOpenForFile = newFileKey != null && prevStateForNew == null
 
-      // Prepare previous keys/expansion baselines
+      // Baselines (use live tree for same file; fallback to stored state when switching)
       val prevAllKeysForThisFile: Set<String> = when {
          firstOpenForFile -> emptySet()
          sameFile -> collectAllPathKeys()
-         newFileKey != null -> savedAllKeysByFile[newFileKey] ?: emptySet()
+         newFileKey != null -> prevStateForNew?.allKeys ?: emptySet()
          else -> emptySet()
       }
       val expandedKeysToRestore: Set<String> = when {
          firstOpenForFile -> emptySet()
          sameFile -> collectExpandedPathKeys()
-         newFileKey != null -> savedExpandedByFile[newFileKey] ?: emptySet()
+         newFileKey != null -> prevStateForNew?.expandedKeys ?: emptySet()
          else -> emptySet()
       }
 
@@ -80,26 +87,23 @@ class TestFileTree(
       }
 
       if (firstOpenForFile) {
-         // First time this file is shown in the tool window: expand everything
+         // First time this file is shown in the tool window: expand everything except Modules
          expandAllNodes()
-         newFileKey?.let { filesInitiallyExpanded.add(it) }
+         stateByFileKey[newFileKey] = FileTreeState(newAllKeys, collectExpandedPathKeys(), initiallyExpanded = true)
       } else {
          // Restore previous expansion state for this file
          if (expandedKeysToRestore.isNotEmpty()) expandPathsByKeys(expandedKeysToRestore)
+         if (newFileKey != null) {
+            val init = prevStateForNew?.initiallyExpanded ?: true
+            stateByFileKey[newFileKey] = FileTreeState(newAllKeys, collectExpandedPathKeys(), init)
+         }
       }
 
-      // Update caches for this file and mark it as current
-      if (newFileKey != null) {
-         savedAllKeysByFile[newFileKey] = newAllKeys
-         savedExpandedByFile[newFileKey] = collectExpandedPathKeys()
-      }
       lastFileKey = newFileKey
    }
 
    fun markFileClosed(file: VirtualFile) {
-      filesInitiallyExpanded.remove(file.path)
-      savedExpandedByFile.remove(file.path)
-      savedAllKeysByFile.remove(file.path)
+      stateByFileKey.remove(file.path)
       if (lastFileKey == file.path) lastFileKey = null
    }
 
