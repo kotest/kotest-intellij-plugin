@@ -104,6 +104,11 @@ class TestExplorerWindow(private val project: Project) : SimpleToolWindowPanel(t
       project.messageBus.connect().subscribe(
          FileEditorManagerListener.FILE_EDITOR_MANAGER,
          object : FileEditorManagerListener {
+            override fun fileClosed(source: FileEditorManager, file: com.intellij.openapi.vfs.VirtualFile) {
+               // when a file is closed, reset the one-time expanded state so reopening expands all again
+               tree.markFileClosed(file)
+            }
+
             override fun selectionChanged(event: FileEditorManagerEvent) {
                val file = fileEditorManager.selectedEditor?.file
                if (file != null) {
