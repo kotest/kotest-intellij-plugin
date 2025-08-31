@@ -87,7 +87,7 @@ class TestFileTree(
       }
 
       if (firstOpenForFile) {
-         // First time this file is shown in the tool window: expand everything except Modules
+         // First time this file is shown in the tool window: expand everything
          expandAllNodes()
          stateByFileKey[newFileKey] = FileTreeState(newAllKeys, collectExpandedPathKeys(), initiallyExpanded = true)
       } else {
