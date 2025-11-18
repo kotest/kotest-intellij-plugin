@@ -1,6 +1,7 @@
 package com.sksamuel.kotest.specs.stringspec
 
 import io.kotest.core.spec.style.StringSpec
+import io.kotest.datatest.withData
 
 class StringSpecExample : StringSpec() {
   init {
