@@ -4,6 +4,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import io.kotest.plugin.intellij.Test
 import io.kotest.plugin.intellij.TestElement
+import io.kotest.plugin.intellij.TestName
 import io.kotest.plugin.intellij.TestType
 import io.kotest.plugin.intellij.psi.isContainedInSpecificSpec
 import org.jetbrains.kotlin.name.FqName
@@ -47,6 +48,9 @@ interface SpecStyle {
             .mapNotNull { it.findAssociatedTest(element) }
             .firstOrNull()
       }
+
+      // in future iterations this could change and be somehow saying running all data tests within the spec
+      val dataTestDefaultTestName: TestName = TestName(null, "All Spec Tests, including data tests", interpolated = false)
    }
 
    /**
@@ -139,4 +143,7 @@ interface SpecStyle {
     * For example, a [FunSpec] would return a string like this: test("given name") { }
     */
    fun generateTest(specName: String, name: String): String
+
+   // TODO default will be removed if this POC is accepted and all other styles implement it
+   fun getDataTestMethodNames() : Set<String> = emptySet()
 }
