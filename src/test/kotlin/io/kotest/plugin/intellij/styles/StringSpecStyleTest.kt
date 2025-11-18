@@ -24,7 +24,7 @@ class StringSpecStyleTest : LightJavaCodeInsightFixtureTestCase() {
       )
 
       val gutters = myFixture.findAllGutters()
-      gutters.size shouldBe 3
+      gutters.size shouldBe 4
 
       val expected = listOf(
          Gutter("Run StringSpecExample", 91, AllIcons.RunConfigurations.TestState.Run_run),

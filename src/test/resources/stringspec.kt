@@ -10,5 +10,8 @@ class StringSpecExample : StringSpec() {
     "test with config".config(enabled = false) {
 
     }
+     withData(1, 2, 3, 4, 5) { value ->
+        // test here
+     }
   }
 }
