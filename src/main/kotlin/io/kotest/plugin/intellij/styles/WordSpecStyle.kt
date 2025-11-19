@@ -143,7 +143,7 @@ object WordSpecStyle : SpecStyle {
    }
 
    /**
-    * For a FunSpec we consider the following scenarios:
+    * For a WordSpec we consider the following scenarios:
     *
     * should("test name") { }
     * xshould("test name") { }
@@ -171,9 +171,9 @@ object WordSpecStyle : SpecStyle {
       if (ktdot != null) return test(ktdot)
 
       // try to find Data Test Method by finding lambda openings
-      val dataMethodCall = element.isDataTestMethodCall(ShouldSpecStyle.getDataTestMethodNames())
+      val dataMethodCall = element.isDataTestMethodCall(getDataTestMethodNames())
       if (dataMethodCall != null) {
-         return ShouldSpecStyle.test(dataMethodCall)
+         return test(dataMethodCall)
       }
 
       return null

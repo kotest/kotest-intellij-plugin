@@ -141,7 +141,7 @@ object ShouldSpecStyle : SpecStyle {
    }
 
    /**
-    * For a FunSpec we consider the following scenarios:
+    * For a ShouldSpec we consider the following scenarios:
     *
     * should("test name") { }
     * xshould("test name") { }

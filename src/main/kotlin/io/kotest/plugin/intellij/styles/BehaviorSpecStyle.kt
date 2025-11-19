@@ -204,7 +204,7 @@ object BehaviorSpecStyle : SpecStyle {
    }
 
    /**
-    * For a Behavior we consider the following scenarios:
+    * For a BehaviorSpec we consider the following scenarios:
     *
     * context("test name") {}
     * xcontext("test name") {}

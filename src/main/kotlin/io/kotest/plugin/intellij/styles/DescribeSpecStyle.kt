@@ -299,9 +299,9 @@ object DescribeSpecStyle : SpecStyle {
       if (dot != null) return test(dot)
 
       // try to find Data Test Method by finding lambda openings
-      val dataMethodCall = element.isDataTestMethodCall(ShouldSpecStyle.getDataTestMethodNames())
+      val dataMethodCall = element.isDataTestMethodCall(getDataTestMethodNames())
       if (dataMethodCall != null) {
-         return ShouldSpecStyle.test(dataMethodCall)
+         return test(dataMethodCall)
       }
       return null
    }
