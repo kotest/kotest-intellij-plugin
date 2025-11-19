@@ -8,11 +8,9 @@ import io.kotest.plugin.intellij.TestType
 import io.kotest.plugin.intellij.psi.enclosingKtClassOrObject
 import io.kotest.plugin.intellij.psi.extractStringForStringExtensionFunctonWithRhsFinalLambda
 import io.kotest.plugin.intellij.psi.extractStringFromStringInvokeWithLambda
-import io.kotest.plugin.intellij.psi.hasFunctionName
 import io.kotest.plugin.intellij.psi.ifCallExpressionLhsStringOpenQuote
 import io.kotest.plugin.intellij.psi.ifDotExpressionSeparator
 import io.kotest.plugin.intellij.psi.isDataTestMethodCall
-import io.kotest.plugin.intellij.styles.SpecStyle.Companion.dataTestDefaultTestName
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtDotQualifiedExpression
@@ -36,7 +34,6 @@ object StringSpecStyle : SpecStyle {
          "withData",
       )
 
-
    /**
     * A test of the form:
     *
@@ -49,27 +46,6 @@ object StringSpecStyle : SpecStyle {
       val testName = TestName(null, normalize(name.text), name.interpolated)
       return Test(testName, null, specClass, TestType.Test, xdisabled = false, psi = this)
    }
-
-   /**
-    * A test container of the form:
-    *```
-    *   withData(1, 2, 3) { }
-    *   withData(listOf(1, 2, 3)) { }
-    *   withData(nameFn = { "test $it" }, 1, 2, 3) { }
-    *   ... any other withData permutation
-    *```
-    * Note: even tho we build a Test, the runner will only read the `isDataTest` boolean to determine it needs to run the whole spec
-    */
-   private fun KtCallExpression.tryWithData(): Test? {
-      val specClass = enclosingKtClassOrObject() ?: return null
-
-      if (!hasFunctionName(getDataTestMethodNames().toList())) return null
-
-
-      // withData is a container because it generates multiple tests at runtime
-      return Test(dataTestDefaultTestName, null, specClass, TestType.Container, xdisabled = false, psi = this, isDataTest = true)
-   }
-
 
    /**
     * Matches tests of the form:
@@ -92,7 +68,7 @@ object StringSpecStyle : SpecStyle {
     */
    override fun test(element: PsiElement): Test? {
       return when (element) {
-         is KtCallExpression -> element.tryTest() ?: element.tryWithData()
+         is KtCallExpression -> element.tryTest() ?: element.tryDataTest()
          is KtDotQualifiedExpression -> element.tryTestWithConfig()
          else -> null
       }

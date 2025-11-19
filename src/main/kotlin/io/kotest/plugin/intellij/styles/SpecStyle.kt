@@ -6,8 +6,11 @@ import io.kotest.plugin.intellij.Test
 import io.kotest.plugin.intellij.TestElement
 import io.kotest.plugin.intellij.TestName
 import io.kotest.plugin.intellij.TestType
+import io.kotest.plugin.intellij.psi.enclosingKtClassOrObject
+import io.kotest.plugin.intellij.psi.hasFunctionName
 import io.kotest.plugin.intellij.psi.isContainedInSpecificSpec
 import org.jetbrains.kotlin.name.FqName
+import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtConstructorCalleeExpression
 import org.jetbrains.kotlin.psi.KtDeclarationModifierList
 import org.jetbrains.kotlin.psi.KtImportList
@@ -146,4 +149,24 @@ interface SpecStyle {
 
    // TODO default will be removed if this POC is accepted and all other styles implement it
    fun getDataTestMethodNames() : Set<String> = emptySet()
+
+   /**
+    * A test container of the form:
+    *```
+    *   withXXX(1, 2, 3) { }
+    *   withXXX(listOf(1, 2, 3)) { }
+    *   withXXX(nameFn = { "test $it" }, 1, 2, 3) { }
+    *   ...
+    *```
+    * plus any other withXXX permutation as per result of [getDataTestMethodNames].
+    *
+    * Note: even tho we build a [Test], with some params, the runner will only read the [Test.isDataTest] boolean and determine it needs to run the whole spec.
+    */
+   fun KtCallExpression.tryDataTest(): Test? {
+      val specClass = enclosingKtClassOrObject() ?: return null
+
+      if (!hasFunctionName(getDataTestMethodNames().toList())) return null
+
+      return Test(dataTestDefaultTestName, null, specClass, TestType.Container, xdisabled = false, psi = this, isDataTest = true)
+   }
 }
