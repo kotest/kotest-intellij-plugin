@@ -52,8 +52,12 @@ interface SpecStyle {
             .firstOrNull()
       }
 
-      // in future iterations this could change and be somehow saying running all data tests within the spec
-      val dataTestDefaultTestName: TestName = TestName(null, "All Spec Tests, including data tests", interpolated = false)
+      /**
+       * in future iterations this could change and be somehow saying running all data tests within the spec.
+       *
+       * Marked as interpolated so the [io.kotest.plugin.intellij.annotators.DuplicatedTestNameAnnotator] doesn't try to be smart and say that all data tests are duplicated
+       */
+      val dataTestDefaultTestName: TestName = TestName(null, "All Spec Tests, including data tests", interpolated = true)
    }
 
    /**
