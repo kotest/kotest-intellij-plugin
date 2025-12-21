@@ -89,7 +89,7 @@ class KotestSettingsEditor(runConfiguration: KotestRunConfiguration) :
          specClassField,
          { config, field -> field.component.text = config.getSpecName() ?: "" },
          { configuration, field -> configuration.setSpecName(field.component.text) },
-         { false }
+         { true }
       )
 
    private val testPathField = LabeledComponent.create(
@@ -124,6 +124,6 @@ class KotestSettingsEditor(runConfiguration: KotestRunConfiguration) :
          packageNameField,
          { configuration, field -> field.component.text = configuration.getPackageName() ?: "" },
          { configuration, field -> configuration.setPackageName(field.component.text) },
-         { false }
+         { true }
       )
 }
