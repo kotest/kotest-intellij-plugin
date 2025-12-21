@@ -122,6 +122,6 @@ class KotestSettingsEditor(runConfiguration: KotestRunConfiguration) :
          packageNameField,
          { configuration, field -> field.component.text = configuration.getPackageName() ?: "" },
          { configuration, field -> configuration.setPackageName(field.component.text) },
-         { true }
+         { false }
       )
 }
