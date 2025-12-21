@@ -42,11 +42,13 @@ class KotestRunConfiguration(name: String, factory: ConfigurationFactory, projec
    private var workingDirectory: String? = PathMacroUtil.MODULE_WORKING_DIR
    private var testPath: String? = null
    private var specName: String? = null
+   private var specsName: String? = null
    private var packageName: String? = null
    private var searchScope: TestSearchScope.Wrapper = TestSearchScope.Wrapper()
 
    fun getTestPath(): String? = testPath
    fun getSpecName(): String? = specName
+   fun getSpecsName(): String? = specsName
    fun getPackageName(): String? = packageName
 
    override fun isPassParentEnvs(): Boolean = passParentEnvs
@@ -157,6 +159,10 @@ class KotestRunConfiguration(name: String, factory: ConfigurationFactory, projec
       this.specName = specName
    }
 
+   fun setSpecsName(specsName: String?) {
+      this.specsName = specsName
+   }
+
    fun setSpec(spec: KtClassOrObject?) {
       this.specName = spec?.fqName?.asString()
    }
@@ -193,6 +199,7 @@ class KotestRunConfiguration(name: String, factory: ConfigurationFactory, projec
       JDOMExternalizerUtil.writeField(element, PassParentEnvsField, passParentEnvs.toString())
       JDOMExternalizerUtil.writeField(element, WorkingDirField, workingDirectory)
       JDOMExternalizerUtil.writeField(element, ProgramParamsField, programParameters)
+      JDOMExternalizerUtil.writeField(element, SpecsNameField, specsName)
       JDOMExternalizerUtil.writeField(element, SpecNameField, specName)
       JDOMExternalizerUtil.writeField(element, TestPathField, testPath)
       JDOMExternalizerUtil.writeField(element, PackageNameField, packageName)
@@ -208,6 +215,7 @@ class KotestRunConfiguration(name: String, factory: ConfigurationFactory, projec
       passParentEnvs = JDOMExternalizerUtil.readField(element, PassParentEnvsField, "false").toBoolean()
       workingDirectory = JDOMExternalizerUtil.readField(element, WorkingDirField)
       programParameters = JDOMExternalizerUtil.readField(element, ProgramParamsField)
+      specsName = JDOMExternalizerUtil.readField(element, SpecsNameField)
       specName = JDOMExternalizerUtil.readField(element, SpecNameField)
       testPath = JDOMExternalizerUtil.readField(element, TestPathField)
       packageName = JDOMExternalizerUtil.readField(element, PackageNameField)
@@ -228,6 +236,7 @@ class KotestRunConfiguration(name: String, factory: ConfigurationFactory, projec
       const val VmParamsField = "vmparams"
       const val TestPathField = "testPath"
       const val SpecNameField = "specName"
+      const val SpecsNameField = "specsName"
       const val AlternativeJrePathField = "jrePath"
       const val AlternativeJrePathEnabledField = "jrePathEnabled"
    }

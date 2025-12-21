@@ -2,12 +2,7 @@ package io.kotest.plugin.intellij.ui
 
 import com.intellij.execution.ExecutionBundle
 import com.intellij.execution.application.JavaSettingsEditorBase
-import com.intellij.execution.ui.CommonJavaFragments
-import com.intellij.execution.ui.CommonParameterFragments
-import com.intellij.execution.ui.ConfigurationModuleSelector
-import com.intellij.execution.ui.DefaultJreSelector
-import com.intellij.execution.ui.ModuleClasspathCombo
-import com.intellij.execution.ui.SettingsEditorFragment
+import com.intellij.execution.ui.*
 import com.intellij.openapi.ui.LabeledComponent
 import com.intellij.ui.EditorTextField
 import com.intellij.ui.EditorTextFieldWithBrowseButton
@@ -31,9 +26,16 @@ class KotestSettingsEditor(runConfiguration: KotestRunConfiguration) :
          setField(specClassTextField)
       }
 
+      SpecClassBrowser<EditorTextField>(
+         project,
+         ConfigurationModuleSelector(project, moduleClasspath.component())
+      ).apply {
+         setField(specsClassTextField)
+      }
+
       PackageChooserActionListener<EditorTextField>(project).apply { setField(packageNameTextField) }
 
-      fragments.addAll(0, listOf(testPathFragment, specClassFragment, packageNameFragment))
+      fragments.addAll(0, listOf(testPathFragment, specsClassFragment, specClassFragment, packageNameFragment))
 
       if (!project.isDefault) {
          val fragment = SettingsEditorFragment.createTag(
@@ -54,6 +56,24 @@ class KotestSettingsEditor(runConfiguration: KotestRunConfiguration) :
       fragments.add(jrePath)
    }
 
+   private val specsClassTextField = EditorTextFieldWithBrowseButton(project, true)
+   private val specsClassField = LabeledComponent.create(
+      specsClassTextField,
+      KotestBundle().getMessage("specs.class.label"),
+      BorderLayout.WEST
+   )
+
+   private val specsClassFragment =
+      SettingsEditorFragment<KotestRunConfiguration, LabeledComponent<EditorTextFieldWithBrowseButton>>(
+         "specsClass",
+         KotestBundle().getMessage("specs.class.name"),
+         "Kotest",
+         specsClassField,
+         { config, field -> field.component.text = config.getSpecsName() ?: "" },
+         { configuration, field -> configuration.setSpecsName(field.component.text) },
+         { true }
+      )
+
    private val specClassTextField = EditorTextFieldWithBrowseButton(project, true)
    private val specClassField = LabeledComponent.create(
       specClassTextField,
@@ -69,7 +89,7 @@ class KotestSettingsEditor(runConfiguration: KotestRunConfiguration) :
          specClassField,
          { config, field -> field.component.text = config.getSpecName() ?: "" },
          { configuration, field -> configuration.setSpecName(field.component.text) },
-         { true }
+         { false }
       )
 
    private val testPathField = LabeledComponent.create(
@@ -104,6 +124,6 @@ class KotestSettingsEditor(runConfiguration: KotestRunConfiguration) :
          packageNameField,
          { configuration, field -> field.component.text = configuration.getPackageName() ?: "" },
          { configuration, field -> configuration.setPackageName(field.component.text) },
-         { true }
+         { false }
       )
 }

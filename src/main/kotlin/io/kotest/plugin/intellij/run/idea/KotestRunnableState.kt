@@ -43,6 +43,13 @@ class KotestRunnableState(
          params.programParametersList.add("--private", "true")
       }
 
+      // spec can be omitted if you want to run all tests in a module
+      val specsName = configuration.getSpecsName()
+      if (!specsName.isNullOrBlank()) {
+         params.programParametersList.add("--specs", specsName)
+         params.programParametersList.add("--private", "true")
+      }
+
       // test can be omitted if you want to run the entire spec or package
       val testPath = configuration.getTestPath()
       if (!testPath.isNullOrBlank())
