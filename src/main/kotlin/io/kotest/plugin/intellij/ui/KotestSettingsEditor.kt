@@ -7,6 +7,7 @@ import com.intellij.openapi.ui.LabeledComponent
 import com.intellij.ui.EditorTextField
 import com.intellij.ui.EditorTextFieldWithBrowseButton
 import com.intellij.ui.TextFieldWithHistory
+import com.intellij.ui.components.fields.ExpandableTextField
 import io.kotest.plugin.intellij.run.idea.KotestRunConfiguration
 import java.awt.BorderLayout
 import java.util.function.BiConsumer
@@ -24,13 +25,6 @@ class KotestSettingsEditor(runConfiguration: KotestRunConfiguration) :
          ConfigurationModuleSelector(project, moduleClasspath.component())
       ).apply {
          setField(specClassTextField)
-      }
-
-      SpecClassBrowser<EditorTextField>(
-         project,
-         ConfigurationModuleSelector(project, moduleClasspath.component())
-      ).apply {
-         setField(specsClassTextField)
       }
 
       PackageChooserActionListener<EditorTextField>(project).apply { setField(packageNameTextField) }
@@ -56,15 +50,19 @@ class KotestSettingsEditor(runConfiguration: KotestRunConfiguration) :
       fragments.add(jrePath)
    }
 
-   private val specsClassTextField = EditorTextFieldWithBrowseButton(project, true)
-   private val specsClassField = LabeledComponent.create(
+   // specs fragment
+   val parser = { text: String -> text.split(";").map { it.trim() }.filter { it.isNotEmpty() } }
+   val joiner = { list: List<String> -> list.joinToString(";") }
+
+   private val specsClassTextField = ExpandableTextField(parser, joiner)
+   private val specsClassField: LabeledComponent<ExpandableTextField> = LabeledComponent.create(
       specsClassTextField,
       KotestBundle().getMessage("specs.class.label"),
       BorderLayout.WEST
    )
 
    private val specsClassFragment =
-      SettingsEditorFragment<KotestRunConfiguration, LabeledComponent<EditorTextFieldWithBrowseButton>>(
+      SettingsEditorFragment<KotestRunConfiguration, LabeledComponent<ExpandableTextField>>(
          "specsClass",
          KotestBundle().getMessage("specs.class.name"),
          "Kotest",

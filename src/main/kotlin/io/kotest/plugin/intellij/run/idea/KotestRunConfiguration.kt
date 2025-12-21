@@ -43,12 +43,22 @@ class KotestRunConfiguration(name: String, factory: ConfigurationFactory, projec
    private var testPath: String? = null
    private var specName: String? = null
    private var specsName: String? = null
+
+   @Deprecated(
+      "Starting with Kotest 6 JVM launcher has no option for package. It will be removed in the future.",
+      level = DeprecationLevel.WARNING
+   )
    private var packageName: String? = null
    private var searchScope: TestSearchScope.Wrapper = TestSearchScope.Wrapper()
 
    fun getTestPath(): String? = testPath
    fun getSpecName(): String? = specName
    fun getSpecsName(): String? = specsName
+
+   @Deprecated(
+      "Starting with Kotest 6 JVM launcher has no option for package. It will be removed in the future.",
+      level = DeprecationLevel.WARNING
+   )
    fun getPackageName(): String? = packageName
 
    override fun isPassParentEnvs(): Boolean = passParentEnvs
@@ -69,6 +79,7 @@ class KotestRunConfiguration(name: String, factory: ConfigurationFactory, projec
    override fun getTestType(): String = when {
       testPath != null -> "test"
       specName != null -> "spec"
+      specsName != null -> "specs"
       packageName != null -> "package"
       else -> "source"
    }
@@ -167,6 +178,10 @@ class KotestRunConfiguration(name: String, factory: ConfigurationFactory, projec
       this.specName = spec?.fqName?.asString()
    }
 
+   @Deprecated(
+      "Starting with Kotest 6 JVM launcher has no option for package. It will be removed in the future.",
+      level = DeprecationLevel.WARNING
+   )
    fun setPackageName(packageName: String?) {
       this.packageName = packageName
    }
