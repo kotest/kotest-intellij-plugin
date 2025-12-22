@@ -18,6 +18,7 @@ import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.search.PackageScope
 import com.intellij.psi.search.searches.ClassInheritorsSearch
 import io.kotest.plugin.intellij.dependencies.ModuleDependencies
+import io.kotest.plugin.intellij.styles.SpecStyle
 
 @Deprecated("Starting with Kotest 6 the preferred method is to run via gradle")
 class PackageRunConfigurationProducer : LazyRunConfigurationProducer<KotestRunConfiguration>() {
@@ -72,29 +73,18 @@ class PackageRunConfigurationProducer : LazyRunConfigurationProducer<KotestRunCo
       project: Project,
       targetPackageName: String
    ): List<PsiClass> {
-      val kotestStyles = setOf(
-         "io.kotest.core.spec.style.FreeSpec",
-         "io.kotest.core.spec.style.ExpectSpec",
-         "io.kotest.core.spec.style.WordSpec",
-         "io.kotest.core.spec.style.BehaviorSpec",
-         "io.kotest.core.spec.style.ShouldSpec",
-         "io.kotest.core.spec.style.StringSpec",
-         "io.kotest.core.spec.style.FunSpec",
-         "io.kotest.core.spec.style.FeatureSpec",
-         "io.kotest.core.spec.style.DescribeSpec",
-         "io.kotest.core.spec.style.AnnotationSpec",
-      )
+      val kotestStyles = SpecStyle.styles.map { it.fqn().asString() }.toSet()
       val facade = JavaPsiFacade.getInstance(project)
       val targetPackage = facade.findPackage(targetPackageName) ?: return emptyList()
       val packageScope = PackageScope(targetPackage, true, false)
       val libraryScope = GlobalSearchScope.allScope(project)
-      val foundClasses = mutableListOf<PsiClass>()
+      val foundClasses = mutableSetOf<PsiClass>() as LinkedHashSet<PsiClass>
       for (styleFqn in kotestStyles) {
          val styleClass = facade.findClass(styleFqn, libraryScope) ?: continue
          val query = ClassInheritorsSearch.search(styleClass, packageScope, true)
          foundClasses.addAll(query.findAll())
       }
-      return foundClasses.distinct().filter { it.language.id == "kotlin" }
+      return foundClasses.filter { it.language.id == "kotlin" }
    }
    private fun setupConfigurationModule(context: ConfigurationContext, configuration: KotestRunConfiguration): Boolean {
       val template = context.runManager.getConfigurationTemplate(configurationFactory)

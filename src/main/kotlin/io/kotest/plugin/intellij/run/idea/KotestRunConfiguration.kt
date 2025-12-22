@@ -41,6 +41,11 @@ class KotestRunConfiguration(name: String, factory: ConfigurationFactory, projec
    private var vmParameters: String? = ""
    private var workingDirectory: String? = PathMacroUtil.MODULE_WORKING_DIR
    private var testPath: String? = null
+
+   @Deprecated(
+      "Starting with Kotest 6 JVM launcher has no option for package. It will be removed in the future.",
+      level = DeprecationLevel.WARNING
+   )
    private var specName: String? = null
    private var specsName: String? = null
 
@@ -52,7 +57,8 @@ class KotestRunConfiguration(name: String, factory: ConfigurationFactory, projec
    private var searchScope: TestSearchScope.Wrapper = TestSearchScope.Wrapper()
 
    fun getTestPath(): String? = testPath
-   fun getSpecName(): String? = specName
+
+   fun getSpecName(): String? = specsName?.split(';')?.get(0)
    fun getSpecsName(): String? = specsName
 
    @Deprecated(
@@ -166,6 +172,10 @@ class KotestRunConfiguration(name: String, factory: ConfigurationFactory, projec
       this.testPath = testName
    }
 
+   @Deprecated(
+      "Starting with Kotest 6 JVM launcher has no option for package. It will be removed in the future.",
+      level = DeprecationLevel.WARNING
+   )
    fun setSpecName(specName: String?) {
       this.specName = specName
    }
@@ -174,6 +184,10 @@ class KotestRunConfiguration(name: String, factory: ConfigurationFactory, projec
       this.specsName = specsName
    }
 
+   @Deprecated(
+      "Starting with Kotest 6 JVM launcher has no option for package. It will be removed in the future.",
+      level = DeprecationLevel.WARNING
+   )
    fun setSpec(spec: KtClassOrObject?) {
       this.specName = spec?.fqName?.asString()
    }
