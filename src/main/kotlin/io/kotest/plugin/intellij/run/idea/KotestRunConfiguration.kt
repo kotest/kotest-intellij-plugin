@@ -33,6 +33,7 @@ class KotestRunConfiguration(name: String, factory: ConfigurationFactory, projec
    JavaTestConfigurationBase(name, JavaRunConfigurationModule(project, false), factory),
    TargetEnvironmentAwareRunProfile {
 
+   private var include: String? = null
    private var alternativeJrePath: String? = ""
    private var alternativeJrePathEnabled = false
    private var envs = mutableMapOf<String, String>()
@@ -40,6 +41,11 @@ class KotestRunConfiguration(name: String, factory: ConfigurationFactory, projec
    private var programParameters: String? = null
    private var vmParameters: String? = ""
    private var workingDirectory: String? = PathMacroUtil.MODULE_WORKING_DIR
+
+   @Deprecated(
+      "Starting with Kotest 6 JVM launcher has no option for package. It will be removed in the future.",
+      level = DeprecationLevel.WARNING
+   )
    private var testPath: String? = null
 
    @Deprecated(
@@ -56,6 +62,12 @@ class KotestRunConfiguration(name: String, factory: ConfigurationFactory, projec
    private var packageName: String? = null
    private var searchScope: TestSearchScope.Wrapper = TestSearchScope.Wrapper()
 
+   fun getInclude(): String? = include
+
+   @Deprecated(
+      "Starting with Kotest 6 JVM launcher has no option for package. It will be removed in the future.",
+      level = DeprecationLevel.WARNING
+   )
    fun getTestPath(): String? = testPath
 
    fun getSpecName(): String? = specsName?.split(';')?.get(0)
@@ -168,6 +180,10 @@ class KotestRunConfiguration(name: String, factory: ConfigurationFactory, projec
       this.envs = envs
    }
 
+   @Deprecated(
+      "Starting with Kotest 6 JVM launcher has no option for package. It will be removed in the future.",
+      level = DeprecationLevel.WARNING
+   )
    fun setTestPath(testName: String?) {
       this.testPath = testName
    }
@@ -255,6 +271,10 @@ class KotestRunConfiguration(name: String, factory: ConfigurationFactory, projec
 
    override fun createTestConsoleProperties(executor: Executor): SMTRunnerConsoleProperties {
       return KotestTestConsoleProperties(this, executor)
+   }
+
+   fun setInclude(include: String?) {
+      this.include = include
    }
 
    companion object {
