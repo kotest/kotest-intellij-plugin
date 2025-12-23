@@ -55,6 +55,7 @@ class SpecRunConfigurationProducer : LazyRunConfigurationProducer<KotestRunConfi
          } ?: return false
 
          if (classOrObject.isRunnableSpec()) {
+            configuration.setSpec(classOrObject)
             configuration.setSpecsName(classOrObject.fqName?.asString() ?: "")
             configuration.setModule(context.module)
             configuration.name = generateName(classOrObject, null)
