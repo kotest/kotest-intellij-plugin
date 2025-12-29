@@ -101,15 +101,23 @@ class TestPathRunConfigurationProducer : LazyRunConfigurationProducer<KotestRunC
 
    /**
     * When two configurations are created from the same context by two different producers, checks if the configuration created by
-    * this producer should be discarded in favor of the other one.
+    * this producer should be preferred over the other one.
     *
-    * We always return true because no one else should be creating Kotest configurations.
+    * We return true when the other configuration is NOT a Kotest configuration, to ensure Kotest specs
+    * take priority over JUnit (which may claim the class due to Spring Boot test annotations like
+    * `@SpringBootTest` that are meta-annotated with `@ExtendWith(SpringExtension.class)`).
     */
    override fun isPreferredConfiguration(self: ConfigurationFromContext?, other: ConfigurationFromContext?): Boolean {
-      return false
+      // Prefer Kotest over non-Kotest configurations (like JUnit)
+      return other?.configuration !is KotestRunConfiguration
    }
 
+   /**
+    * Returns true if this configuration should replace the other configuration.
+    * We replace JUnit configurations when we detect a Kotest spec.
+    */
    override fun shouldReplace(self: ConfigurationFromContext, other: ConfigurationFromContext): Boolean {
-      return false
+      // Replace non-Kotest configurations (like JUnit) with Kotest
+      return other.configuration !is KotestRunConfiguration
    }
 }
