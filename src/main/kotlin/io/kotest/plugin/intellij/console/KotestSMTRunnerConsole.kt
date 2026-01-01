@@ -8,6 +8,7 @@ import com.intellij.execution.testframework.sm.runner.ui.SMTRunnerConsoleView
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.notification.NotificationGroupManager
 import com.intellij.notification.NotificationType
+import com.intellij.openapi.application.ApplicationInfo
 import com.intellij.openapi.project.Project
 
 /**
@@ -30,7 +31,15 @@ class KotestSMTRunnerConsole(
    // we keep this map here because the console is the object that is passed around by intellij to our callbacks
    private val proxies = mutableMapOf<String, SMTestProxy>()
 
-   override fun isExecutionViewHidden() = false
+   /**
+    * ANDROID STUDIO WORKAROUND - see [AndroidStudioGradleTestTreeFix] for details
+    * Hide execution view in Android Studio to prevent duplicate pane
+    * Remove this when Android Studio ijLog parser works as expected
+    */
+   override fun isExecutionViewHidden(): Boolean {
+      val appName = ApplicationInfo.getInstance().fullApplicationName
+      return appName.contains("Android Studio", ignoreCase = true)
+   }
 
    override fun print(s: String, contentType: ConsoleViewContentType) {
       if (detectUnwantedEmptyLine(s)) return
@@ -39,6 +48,13 @@ class KotestSMTRunnerConsole(
 
    internal fun getTestProxy(testId: String): SMTestProxy {
       return proxies[testId] ?: error("Proxy $testId not found")
+   }
+
+   /**
+    * Used by [AndroidStudioGradleTestTreeFix] - returns null instead of throwing
+    */
+   internal fun getTestProxyOrNull(testId: String): SMTestProxy? {
+      return proxies[testId]
    }
 
    internal fun addTestProxy(testId: String, proxy: SMTestProxy) {

@@ -114,19 +114,19 @@ class KotestExecutionConsoleManager : ExternalSystemExecutionConsoleManager<SMTR
     * It is up to this extension to determine if it is applicable for the given task.
     */
    override fun isApplicableFor(task: ExternalSystemTask): Boolean {
-//      println("Checking is applicable, task: $task")
       if (task is ExternalSystemExecuteTaskTask) {
          if (task.externalSystemId.id == GradleConstants.SYSTEM_ID.id) {
-//            println("Checking is applicable, tasks to execute: ${task.tasksToExecute} state=${task.state} data=${task.userDataString} externalPath=${task.externalProjectPath}")
+            if (GradleUtils.hasKotestTask(task.tasksToExecute)) {
+               return true
+            }
 
-            // Checking is applicable, tasks to execute: [kotestDebugUnitTest]
-            // state=NOT_STARTED
-            // data={COPYABLE_USER_MAP_KEY={com.intellij.coverage=com.intellij.execution.configurations.coverage.JavaCoverageEnabledConfiguration@3486f84}, RUN_INPUT_KEY=com.intellij.openapi.externalSystem.util.DiscardingInputStream@6dacfdb6, DEBUG_SERVER_PROCESS=true, DEBUG_ALL_TASKS=false, RUN_AS_TEST=false, IS_TEST_TASK_RERUN=false}{com.intellij.coverage=com.intellij.execution.configurations.coverage.JavaCoverageEnabledConfiguration@3486f84}
-            // externalPath=/home/sam/development/workspace/kotest/kotest-examples/kotest-multiplatform
-
-            val hasKotestTask = GradleUtils.hasKotestTask(task.tasksToExecute)
-//            println("hasKotestTask: $hasKotestTask")
-            return hasKotestTask
+            /**
+             * ANDROID STUDIO WORKAROUND - see [AndroidStudioGradleTestTreeFix] for details
+             * Remove this block when Android Studio fixes their ijLog parser
+             */
+            if (AndroidStudioGradleTestTreeFix.shouldHandleTestTask(task.tasksToExecute)) {
+               return true
+            }
          }
       }
       return false
@@ -140,7 +140,6 @@ class KotestExecutionConsoleManager : ExternalSystemExecutionConsoleManager<SMTR
    ) {
       when (executionConsole) {
          is KotestSMTRunnerConsole -> {
-            executionConsole.print(text, ConsoleViewContentType.getConsoleViewType(processOutputType))
             executionConsole.onOutputHandler.onOutput(executionConsole, text, processOutputType)
          }
       }
@@ -152,6 +151,13 @@ class KotestConsoleViewOnOutputHandler {
    private var buffer = StringBuilder()
 
    fun onOutput(console: KotestSMTRunnerConsole, text: String, processOutputType: Key<*>) {
+      // ANDROID STUDIO WORKAROUND - see AndroidStudioGradleTestTreeFix.kt for details
+      // Remove this block when Android Studio fixes their ijLog parser
+      // handleOutput returns true if it handled an ijLog event (don't print raw XML)
+      if (AndroidStudioGradleTestTreeFix.handleOutput(console, text)) {
+         return
+      }
+
       val startsWith = text.trim().startsWith("##teamcity[")
       val endsWith = text.trim().endsWith("]")
       if (startsWith && endsWith) {
