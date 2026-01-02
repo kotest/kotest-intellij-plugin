@@ -30,7 +30,7 @@ class GradleTestTaskRunConfigurationProducer : TestClassGradleConfigurationProdu
     * `@SpringBootTest` that are meta-annotated with `@ExtendWith(SpringExtension.class)`).
     */
    override fun isPreferredConfiguration(self: ConfigurationFromContext, other: ConfigurationFromContext): Boolean {
-      // Prefer Kotest over non-Gradle configurations (like JUnit)
+      // Prefer this over non GradleRunConfiguration
       return other.configuration !is GradleRunConfiguration
    }
 
@@ -39,7 +39,7 @@ class GradleTestTaskRunConfigurationProducer : TestClassGradleConfigurationProdu
     * We replace JUnit configurations when we detect a Kotest spec.
     */
    override fun shouldReplace(self: ConfigurationFromContext, other: ConfigurationFromContext): Boolean {
-      // Replace non-Gradle configurations (like JUnit) with Kotest
+      // Replace non GradleRunConfiguration with this
       return other.configuration !is GradleRunConfiguration
    }
 
