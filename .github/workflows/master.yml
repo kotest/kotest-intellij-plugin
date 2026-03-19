@@ -12,6 +12,10 @@ jobs:
    build:
       runs-on: ubuntu-latest
 
+      permissions:
+         contents: read
+         packages: write
+
       strategy:
          matrix:
             product: [ "IC-242", "IC-243", "IC-251", "IC-252" ]
@@ -27,11 +31,32 @@ jobs:
             with:
                java-version: "21"
                distribution: "temurin"
+               server-id: github
+               server-username: GITHUB_ACTOR
+               server-password: GITHUB_TOKEN
 
          -  name: Run tests
             run: ./gradlew check
             env:
                PRODUCT_NAME: ${{ matrix.product }}
+
+         -  name: Build plugin distribution
+            run: ./gradlew buildPlugin
+            env:
+               PRODUCT_NAME: ${{ matrix.product }}
+
+         -  name: Publish distribution zip to GitHub Packages
+            run: |
+               mvn --batch-mode deploy:deploy-file \
+                  -Dfile=$(ls build/distributions/*.zip) \
+                  -DgroupId=io.kotest \
+                  -DartifactId=kotest-intellij-plugin-${{ matrix.product }} \
+                  -Dversion=6.1.${{ github.run_number }} \
+                  -Dpackaging=zip \
+                  -DrepositoryId=github \
+                  -Durl=https://maven.pkg.github.com/${{ github.repository }}
+            env:
+               GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
          -  name: Bundle the build report
             if: failure()
