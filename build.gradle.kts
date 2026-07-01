@@ -73,7 +73,7 @@ plugins {
    val kotlinVersion = "2.2.0"
    id("java")
    id("org.jetbrains.kotlin.jvm").version(kotlinVersion)
-   id("org.jetbrains.intellij.platform") version "2.13.1"
+   id("org.jetbrains.intellij.platform") version "2.17.0"
 }
 
 repositories {
